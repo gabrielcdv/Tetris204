@@ -1,5 +1,7 @@
 # Tetris204
-
-##Installation de SFML
+Projet d'IN204
+## Installation de SFML
 Ce projet utilise la bibliothèque SFML pour l'affichage. Elle doit être installée pour la compilation.
-sudo apt-get install libsfml-dev
+
+``sudo apt-get install libsfml-dev
+``
