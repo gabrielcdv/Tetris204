@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "tetris.hpp"
+#include "color.hpp"
 void GameWindow::animate(Game& game)
 {
     std::vector<std::vector<int>> &grid = game.getGrid();

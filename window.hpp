@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "tetris.hpp"
+#include "color.hpp"
 class GameWindow {
     private:
         sf::RenderWindow window;
