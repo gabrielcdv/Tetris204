@@ -1,12 +1,12 @@
-#pragma once
-#include "display.hpp"
+#include "tetris.hpp"
+
 
 void Grid::moveLineDown(int lineIndex)
 {
     /*
     Permet de décaler la ligne d'indice lineIndex de 1 vers le bas en écrasant la ligne du dessous.
     */
-    if (lineIndex >= (matrix.size()))
+    if (lineIndex >= int(matrix.size()))
     {
         std::cout << "Problème d'indice. Impossible de décaler la ligne." << std::endl;
         return;
@@ -36,7 +36,7 @@ int Grid::checkForFullLines()
         }
         if (isNull) {// Si la ligne i est nulle
             // Alors on décale toutes les lignes d'au dessus vers le bas
-            for (int k = 0; k < i; k++)
+            for (size_t k = 0; k < i; k++)
             {
                 moveLineDown(k);
             }
