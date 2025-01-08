@@ -33,4 +33,4 @@
 *.app
 
 # VSCode files
-.vscode/*
+.vscode/
