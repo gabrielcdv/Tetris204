@@ -1,3 +1,6 @@
+#ifndef COLOR_HPP
+#define COLOR_HPP
+
 enum Color {
     Empty = 0,
     Cyan = 1,
@@ -8,3 +11,6 @@ enum Color {
     Red = 6,
     Green = 7
 };
+
+
+#endif
