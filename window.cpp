@@ -3,7 +3,7 @@
 #include "color.hpp"
 void GameWindow::animate(Game& game)
 {
-    std::vector<std::vector<int>> &grid = game.getGrid();
+    Grid &grid = game.getGrid();
 
     // Boucle principale
     while (window.isOpen())
@@ -16,9 +16,9 @@ void GameWindow::animate(Game& game)
         }
 
         // Dessiner la grtille du jeu
-        for (int row = 0; row < game.getGridHeight(); ++row)
+        for (int row = 0; row < grid.getGridHeight(); ++row)
         {
-            for (int col = 0; col < game.getGridWidth(); ++col)
+            for (int col = 0; col < grid.getGridWidth(); ++col)
             {
                 // Créer un carré
                 int dimcase=30;
@@ -26,7 +26,7 @@ void GameWindow::animate(Game& game)
                 square.setPosition(col * dimcase, row * dimcase);
 
                 // Déterminer la couleur (alternance noir/blanc)
-                if (grid[row][col] == 0) // si case vide
+                if (grid.getMatrix()[row][col] == 0) // si case vide
                 {
                     if ((row + col) % 2 == 0)
                         square.setFillColor(sf::Color::Black); // Blanc

@@ -3,7 +3,8 @@
 
 
 int main() {
-    Game game(22,10);
+    Grid gamegrid(22,10);
+    Game game(gamegrid);
     GameWindow fenetre=GameWindow();
     fenetre.animate(game);
     return 0;

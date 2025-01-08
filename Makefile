@@ -2,7 +2,7 @@
 TARGET = test.x
 
 # Liste des fichiers sources
-SRCS = window.cpp test.cpp
+SRCS = window.cpp test.cpp display.cpp
 
 # Fichiers objets correspondants
 OBJS = $(SRCS:.cpp=.o)
