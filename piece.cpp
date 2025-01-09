@@ -37,39 +37,81 @@ Piece::Piece(char type) : mType(type){
     }
 };
 
-void Piece::rotateRight(){
-    for (size_t i = 0; i < mPoints.size(); ++i) {
-        int x = mPoints[i][0];
-        mPoints[i][0] = mPoints[i][1] ;
-        mPoints[i][1] = x;
+FallingPiece::FallingPiece(Grid mGrid, std::vector<int> mGridPosition){
+    for (size_t i = 0; i < mPoints.size(); ++i){
+        mPointsInGrid[i][0] = mPoints[i][0] + mGridPosition[0];
+        mPointsInGrid[i][1] = mPoints[i][1] + mGridPosition[1];
     }
-} //A REVOIR POUR VOIR SI CA SORT DE LA GRILLE, METTRE DANS FALLINGPIECE ??
+};
 
-void FallingPiece::moveRight(){
-    if (mGridPosition[0] + 1 < width){
-        mGridPosition[0] = mGridPosition[0] + 1;
+bool FallingPiece::checkFit(int newx, int newy){
+    if (newx<mGrid.getGridWidth()){
+        return false;
+    }
+    if (newy<mGrid.getGridHeight()){
+        return false;
+    }
+    if (mGrid.getMatrix()[newx][newy]!=0){
+        std::cout << "La case est déjà occupée" << std::endl ;
+        return false;
     }
     else {
-        std::cout << "La pièce ne peut sortir de la grille" << std::endl ;
+        return true ;
+    }
+}
+
+void FallingPiece::rotateRight(){
+    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
+        int newx = mPointsInGrid[i][1];
+        int newy = mPointsInGrid[i][0];
+        if (checkFit(newx, newy)){
+            mPointsInGrid[i][0] = newx ;
+            mPointsInGrid[i][1] = newy;
+        };
+    }
+}
+
+void FallingPiece::rotateLeft(){
+    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
+        int newx = mPointsInGrid[i][1];
+        int newy = - mPointsInGrid[i][0];
+        if (checkFit(newx, newy)){
+            mPointsInGrid[i][0] = newx ;
+            mPointsInGrid[i][1] = newy;
+        };
+    }
+}
+
+void FallingPiece::moveRight(){ 
+    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
+        int newx = mPointsInGrid[i][0]+1;
+        int newy = mPointsInGrid[i][1];
+        if (checkFit(newx, newy)){
+            mPointsInGrid[i][0] = newx ;
+            mPointsInGrid[i][1] = newy;
+        };
     }
 };
 
 void FallingPiece::moveLeft(){
-    if (mGridPosition[0] - 1 > 0){
-        mGridPosition[0] = mGridPosition[0] - 1;
-    }
-    else {
-        std::cout << "La pièce ne peut sortir de la grille" << std::endl ;
+    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
+        int newx = mPointsInGrid[i][0]-1;
+        int newy = mPointsInGrid[i][1];
+        if (checkFit(newx, newy)){
+            mPointsInGrid[i][0] = newx ;
+            mPointsInGrid[i][1] = newy;
+        };
     }
 };
 
 void FallingPiece::moveDown(){
-    if (mGridPosition[1] + 1 < height){
-        mGridPosition[0] = mGridPosition[0] + 1;
-    }
-    else {
-        std::cout << "La pièce ne peut sortir de la grille" << std::endl ;
-        //REDIRIGER VERS L'IMPRESSION DE LA GRILLE ?
+    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
+        int newx = mPointsInGrid[i][0];
+        int newy = mPointsInGrid[i][1]+1;
+        if (checkFit(newx, newy)){
+            mPointsInGrid[i][0] = newx ;
+            mPointsInGrid[i][1] = newy;
+        };
     }
 };
 
