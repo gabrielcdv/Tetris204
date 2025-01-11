@@ -37,81 +37,73 @@ Piece::Piece(char type) : mType(type){
     }
 };
 
-FallingPiece::FallingPiece(Grid mGrid, std::vector<int> mGridPosition){
+FallingPiece::FallingPiece(Grid grid, std::vector<int> gridPosition, char type) : Piece(type), mGrid(grid), mGridPosition(gridPosition){};
+
+
+std::vector<std::vector<int>> FallingPiece::getPointsInGrid() const {
+    std::vector<std::vector<int>> pointsInGrid ;
     for (size_t i = 0; i < mPoints.size(); ++i){
-        mPointsInGrid[i][0] = mPoints[i][0] + mGridPosition[0];
-        mPointsInGrid[i][1] = mPoints[i][1] + mGridPosition[1];
+        pointsInGrid.push_back({mPoints[i][0] + mGridPosition[0], mPoints[i][1] + mGridPosition[1]});
     }
+    return pointsInGrid ;
 };
 
-bool FallingPiece::checkFit(int newx, int newy){
-    if (newx<mGrid.getGridWidth()){
+bool FallingPiece::checkFit(){
+    if (mGridPosition[0]+1>=mGrid.getGridWidth()){
         return false;
     }
-    if (newy<mGrid.getGridHeight()){
+    if (mGridPosition[1]+1>=mGrid.getGridHeight()){
         return false;
     }
-    if (mGrid.getMatrix()[newx][newy]!=0){
-        std::cout << "La case est déjà occupée" << std::endl ;
-        return false;
+    for (size_t i = 0; i < mPoints.size(); ++i){
+        int newx = mPoints[i][0] + mGridPosition[0];
+        int newy = mPoints[i][1] + mGridPosition[1];
+        if (mGrid.getMatrix()[newx][newy]!=0){
+            std::cout << "La case est déjà occupée" << std::endl ;
+            return false ;
+        }
     }
-    else {
-        return true ;
+    return true ;
+}
+
+
+void FallingPiece::rotateLeft(){
+    if (checkFit()){
+        for (size_t i = 0; i < mPoints.size(); ++i) {
+            int newx = mPoints[i][1];
+            int newy = - mPoints[i][0];            
+            mPoints[i][0] = newx ;
+            mPoints[i][1] = newy;
+        }
     }
 }
 
 void FallingPiece::rotateRight(){
-    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
-        int newx = mPointsInGrid[i][1];
-        int newy = mPointsInGrid[i][0];
-        if (checkFit(newx, newy)){
-            mPointsInGrid[i][0] = newx ;
-            mPointsInGrid[i][1] = newy;
-        };
-    }
-}
-
-void FallingPiece::rotateLeft(){
-    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
-        int newx = mPointsInGrid[i][1];
-        int newy = - mPointsInGrid[i][0];
-        if (checkFit(newx, newy)){
-            mPointsInGrid[i][0] = newx ;
-            mPointsInGrid[i][1] = newy;
-        };
+    if (checkFit()){
+        for (size_t i = 0; i < mPoints.size(); ++i) {
+            int newx = - mPoints[i][1];
+            int newy = mPoints[i][0];            
+            mPoints[i][0] = newx ;
+            mPoints[i][1] = newy;         
+        }
     }
 }
 
 void FallingPiece::moveRight(){ 
-    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
-        int newx = mPointsInGrid[i][0]+1;
-        int newy = mPointsInGrid[i][1];
-        if (checkFit(newx, newy)){
-            mPointsInGrid[i][0] = newx ;
-            mPointsInGrid[i][1] = newy;
-        };
+    if (checkFit()){
+        mGridPosition[0]= mGridPosition[0]+1;
     }
 };
 
 void FallingPiece::moveLeft(){
-    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
-        int newx = mPointsInGrid[i][0]-1;
-        int newy = mPointsInGrid[i][1];
-        if (checkFit(newx, newy)){
-            mPointsInGrid[i][0] = newx ;
-            mPointsInGrid[i][1] = newy;
-        };
+    if (checkFit()){
+        mGridPosition[0]= mGridPosition[0]-1;
     }
 };
 
 void FallingPiece::moveDown(){
-    for (size_t i = 0; i < mPointsInGrid.size(); ++i) {
-        int newx = mPointsInGrid[i][0];
-        int newy = mPointsInGrid[i][1]+1;
-        if (checkFit(newx, newy)){
-            mPointsInGrid[i][0] = newx ;
-            mPointsInGrid[i][1] = newy;
-        };
+    if (checkFit()){
+        mGridPosition[1]= mGridPosition[1]+1;
     }
 };
 

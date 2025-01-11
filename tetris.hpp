@@ -11,6 +11,7 @@ private:
     void moveLineDown(int lineIndex);
 
 public:
+    Grid() = default;
     Grid(int grid_height, int grid_width) : grid_height(grid_height),
                                             grid_width(grid_width), 
                                             matrix(grid_height, 
