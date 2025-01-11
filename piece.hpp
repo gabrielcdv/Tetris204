@@ -7,12 +7,12 @@ class Piece{
     protected :
         std::vector<std::vector<int>> mPoints ;
         char mType ;
-        Color mColor ; 
+        Color mColor ;
     public :
         Piece()=default;
         std::vector<std::vector<int>> getPoints() const {return mPoints ;};
         char getType() const {return mType ;};
-        int getColor() const {return mColor ;};
+        Color getColor() const {return mColor ;};
         Piece(char type);
 };
 

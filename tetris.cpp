@@ -1,6 +1,5 @@
 #include "tetris.hpp"
 
-
 void Grid::moveLineDown(int lineIndex)
 {
     /*
@@ -47,4 +46,72 @@ int Grid::checkForFullLines()
     }
     
     return nbFullLines;
+};
+
+
+void Grid::stampPiece(FallingPiece piece) {
+    /*
+    Cette fonction grave la FallingPiece dans la grille (i.e. modifie la matrice de jeu pour 
+    y inscrire les blocs de couleur de la pièce)
+    */
+   std::vector<std::vector<int>> points = piece.getPoints();
+   for (size_t k = 0; k < points.size(); k++)
+   {
+    int i = points[k][0];
+    int j = points[k][1];
+    matrix[i][j]=piece.getColor();
+   }
+   
+};
+
+void Game::animateWindow()
+{
+    sf::RenderWindow& window=gameWindow.getSFWindow();
+    // Boucle principale
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // Dessiner la grtille du jeu
+        for (int row = 0; row < grid.getGridHeight(); ++row)
+        {
+            for (int col = 0; col < grid.getGridWidth(); ++col)
+            {
+                // Créer un carré
+                int dimcase=30;
+                sf::RectangleShape square(sf::Vector2f(dimcase, dimcase)); // TODO ne pas hardcoder le 30 (taille d'une case en pixel)
+                square.setPosition(col * dimcase, row * dimcase);
+
+                // Déterminer la couleur (alternance noir/blanc)
+                if (grid.getMatrix()[row][col] == 0) // si case vide
+                {
+                    if ((row + col) % 2 == 0)
+                        square.setFillColor(sf::Color::Black); // Noir
+                    else
+                        square.setFillColor(sf::Color(50,50,50,255)); // Noir moins foncé
+                } else { // On remplit la case de la couleur correspondante
+                    square.setFillColor(getSFMLColor(grid.getMatrix()[row][col]));
+                }
+
+                // Ajouter le carré à la fenêtre
+                window.draw(square);
+            }
+        }
+
+        // Afficher le contenu
+        window.display();
+    }
+}
+
+
+void Game::startGame() {
+    //TODOLancement des threads éventuels 
+
+    //lancement de l'affichage
+    animateWindow();
 };
