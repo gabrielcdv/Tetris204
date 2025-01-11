@@ -21,7 +21,7 @@ public:
                                             std::vector<Color>(grid_width, Empty)) {};
     int getGridHeight() const { return grid_height; };
     int getGridWidth() const { return grid_width; };
-    std::vector<std::vector<Color>> &getMatrix() { return matrix; };
+    std::vector<std::vector<Color>>& getMatrix() { return matrix; };
     
 
     int checkForFullLines();
@@ -33,11 +33,11 @@ public:
 class Game
 {
 private:
-    Grid grid;
+    Grid& grid;
     GameWindow gameWindow;
 
 public:
-    Game(Grid grid) : grid(grid) {};
+    Game(Grid& grid) : grid(grid) {};
     Grid& getGrid() {return grid;};
     void startGame();
     void animateWindow();

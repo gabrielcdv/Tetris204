@@ -18,18 +18,20 @@ class Piece{
 
 class FallingPiece : public Piece {
     private :
-        Grid mGrid ;
+        Grid& mGrid ;
         std::vector<int> mGridPosition; //position du centre de la pièce dans la grille - on imagine une grille (10, 22) avec le coin en haut à gauche à (0,0) donc numérotation d'en bas à droite (9, 21)
     public :    
         FallingPiece()= default;
-        FallingPiece(Grid grid, std::vector<int> GridPosition, char type);
+        FallingPiece(Grid& grid, std::vector<int> gridPosition, char type) : Piece(type), mGrid(grid), mGridPosition(gridPosition){};
         std::vector<int> getGridPosition() const {return mGridPosition ;};
         std::vector<std::vector<int>> getPointsInGrid() const ;
-        bool checkFit();
+        
         void moveRight();
         void moveLeft();
         void moveDown();
         void rotateRight();
         void rotateLeft();
-        void stampPiece();
+        void stamp();
 };
+
+bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int> gridPosition);

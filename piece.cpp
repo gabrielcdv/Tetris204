@@ -37,7 +37,7 @@ Piece::Piece(char type) : mType(type){
     }
 };
 
-FallingPiece::FallingPiece(Grid grid, std::vector<int> gridPosition, char type) : Piece(type), mGrid(grid), mGridPosition(gridPosition){};
+
 
 
 std::vector<std::vector<int>> FallingPiece::getPointsInGrid() const {
@@ -48,17 +48,25 @@ std::vector<std::vector<int>> FallingPiece::getPointsInGrid() const {
     return pointsInGrid ;
 };
 
-bool FallingPiece::checkFit(){
-    if (mGridPosition[0]+1>=mGrid.getGridWidth()){
-        return false;
+
+bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int> gridPosition) {
+    for (size_t k = 0; k < points.size(); k++)
+    {
+        int i = points[k][0] + gridPosition[0];
+        int j = points[k][1] + gridPosition[1];
+        if (i<0 || i>=grid.getGridHeight() || j<0 || j>=grid.getGridWidth())
+        {
+            return false;
+        }
+        
+    
     }
-    if (mGridPosition[1]+1>=mGrid.getGridHeight()){
-        return false;
-    }
-    for (size_t i = 0; i < mPoints.size(); ++i){
-        int newx = mPoints[i][0] + mGridPosition[0];
-        int newy = mPoints[i][1] + mGridPosition[1];
-        if (mGrid.getMatrix()[newx][newy]!=0){
+    
+    
+    for (size_t i = 0; i < points.size(); ++i){
+        int newi = points[i][0] + gridPosition[0];
+        int newj = points[i][1] + gridPosition[1];
+        if (grid.getMatrix()[newi][newj]!=0){
             std::cout << "La case est déjà occupée" << std::endl ;
             return false ;
         }
@@ -67,48 +75,71 @@ bool FallingPiece::checkFit(){
 }
 
 
-void FallingPiece::rotateLeft(){
-    if (checkFit()){
+void FallingPiece::rotateRight(){
+    std::vector<std::vector<int>> newPoints=mPoints;
+    // On fait la rotation sur la copie
+    for (size_t i = 0; i < newPoints.size(); ++i) {
+            int newi = newPoints[i][1];
+            int newj = - newPoints[i][0];            
+            newPoints[i][0] = newi ;
+            newPoints[i][1] = newj;
+        }
+    if (checkFit(mGrid, newPoints, mGridPosition)){
+        //On fait vraiment la rotation
         for (size_t i = 0; i < mPoints.size(); ++i) {
-            int newx = mPoints[i][1];
-            int newy = - mPoints[i][0];            
-            mPoints[i][0] = newx ;
-            mPoints[i][1] = newy;
+            int newi = mPoints[i][1];
+            int newj = - mPoints[i][0];            
+            mPoints[i][0] = newi ;
+            mPoints[i][1] = newj;
         }
     }
 }
 
-void FallingPiece::rotateRight(){
-    if (checkFit()){
+void FallingPiece::rotateLeft(){
+
+    std::vector<std::vector<int>> newPoints=mPoints;
+    // On fait la rotation sur la copie
+    for (size_t i = 0; i < newPoints.size(); ++i) {
+            int newi = - newPoints[i][1];
+            int newj = newPoints[i][0];            
+            newPoints[i][0] = newi ;
+            newPoints[i][1] = newj;
+        }
+
+    if (checkFit(mGrid, newPoints, mGridPosition)){
         for (size_t i = 0; i < mPoints.size(); ++i) {
-            int newx = - mPoints[i][1];
-            int newy = mPoints[i][0];            
-            mPoints[i][0] = newx ;
-            mPoints[i][1] = newy;         
+            int newi = - mPoints[i][1];
+            int newj = mPoints[i][0];            
+            mPoints[i][0] = newi ;
+            mPoints[i][1] = newj;         
         }
     }
 }
 
 void FallingPiece::moveRight(){ 
-    if (checkFit()){
-        mGridPosition[0]= mGridPosition[0]+1;
-    }
-};
-
-void FallingPiece::moveLeft(){
-    if (checkFit()){
-        mGridPosition[0]= mGridPosition[0]-1;
-    }
-};
-
-void FallingPiece::moveDown(){
-    if (checkFit()){
+    std::vector<int> newPosition = {mGridPosition[0], mGridPosition[1] + 1};
+    if (checkFit(mGrid, mPoints, newPosition)){
         mGridPosition[1]= mGridPosition[1]+1;
     }
 };
 
+void FallingPiece::moveLeft(){
+    std::vector<int> newPosition = {mGridPosition[0], mGridPosition[1] - 1};
+    if (checkFit(mGrid, mPoints, newPosition)){
+        mGridPosition[1]= mGridPosition[1]-1;
+    }
+};
 
-void FallingPiece::stampPiece() {
+void FallingPiece::moveDown(){
+    std::vector<int> newPosition = {mGridPosition[0] + 1, mGridPosition[1]};
+    if (checkFit(mGrid, mPoints, newPosition)){
+        mGridPosition[0]= mGridPosition[0]+1;
+    }
+};
+
+
+void FallingPiece::stamp() {
+    std::cout << "START" << std::endl;
     /*
     Cette fonction grave la FallingPiece dans la grille (i.e. modifie la matrice de jeu pour 
     y inscrire les blocs de couleur de la pièce)
@@ -117,7 +148,11 @@ void FallingPiece::stampPiece() {
    {
     int i = mPoints[k][0] + mGridPosition[0];
     int j = mPoints[k][1] + mGridPosition[1];
+    std::cout << "On change " << mGrid.getMatrix()[i][j] << std::endl;
     mGrid.getMatrix()[i][j]=mColor;
+    std:: cout << "résultat : " << mGrid.getMatrix()[i][j] << std::endl;
+    
    }
+   std::cout << "END" << std::endl;
    
 };

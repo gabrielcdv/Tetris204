@@ -75,6 +75,21 @@ void Game::animateWindow()
                 square.setPosition(col * dimcase, row * dimcase);
 
                 // Déterminer la couleur (alternance noir/blanc)
+
+
+
+
+                /*
+                for (size_t i = 0; i < grid.getMatrix().size(); i++)
+                {
+                    for (size_t j = 0; j < grid.getMatrix()[i].size(); j++)
+                    {
+                        std::cout << i << "," << j << "->" << grid.getMatrix()[i][j] << std::endl;
+                    };
+                    
+                }*/
+
+                
                 if (grid.getMatrix()[row][col] == 0) // si case vide
                 {
                     if ((row + col) % 2 == 0)
