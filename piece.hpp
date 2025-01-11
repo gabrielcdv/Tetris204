@@ -31,4 +31,5 @@ class FallingPiece : public Piece {
         void moveDown();
         void rotateRight();
         void rotateLeft();
+        void stampPiece();
 };

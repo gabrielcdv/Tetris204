@@ -3,7 +3,7 @@
 #include <iostream>
 #include "window.hpp"
 #include "color.hpp"
-#include "piece.hpp"
+
 
 class Grid
 {
@@ -22,7 +22,7 @@ public:
     int getGridHeight() const { return grid_height; };
     int getGridWidth() const { return grid_width; };
     std::vector<std::vector<Color>> &getMatrix() { return matrix; };
-    void stampPiece(FallingPiece piece);
+    
 
     int checkForFullLines();
     

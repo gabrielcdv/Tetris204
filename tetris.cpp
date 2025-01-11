@@ -49,20 +49,7 @@ int Grid::checkForFullLines()
 };
 
 
-void Grid::stampPiece(FallingPiece piece) {
-    /*
-    Cette fonction grave la FallingPiece dans la grille (i.e. modifie la matrice de jeu pour 
-    y inscrire les blocs de couleur de la pièce)
-    */
-   std::vector<std::vector<int>> points = piece.getPoints();
-   for (size_t k = 0; k < points.size(); k++)
-   {
-    int i = points[k][0];
-    int j = points[k][1];
-    matrix[i][j]=piece.getColor();
-   }
-   
-};
+
 
 void Game::animateWindow()
 {

@@ -107,3 +107,17 @@ void FallingPiece::moveDown(){
     }
 };
 
+
+void FallingPiece::stampPiece() {
+    /*
+    Cette fonction grave la FallingPiece dans la grille (i.e. modifie la matrice de jeu pour 
+    y inscrire les blocs de couleur de la pièce)
+    */
+   for (size_t k = 0; k < mPoints.size(); k++)
+   {
+    int i = mPoints[k][0] + mGridPosition[0];
+    int j = mPoints[k][1] + mGridPosition[1];
+    mGrid.getMatrix()[i][j]=mColor;
+   }
+   
+};
