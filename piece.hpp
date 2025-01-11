@@ -6,11 +6,11 @@ class Piece{
     protected :
         std::vector<std::vector<int>> mPoints ;
         char mType ;
-        int mColor ;
+        Color mColor ;
     public :
         std::vector<std::vector<int>> getPoints() const {return mPoints ;};
         char getType() const {return mType ;};
-        int getColor() const {return mColor ;};
+        Color getColor() const {return mColor ;};
         Piece(char type);
         void rotateRight();
         void rotateLeft();

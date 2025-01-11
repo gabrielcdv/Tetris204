@@ -6,8 +6,14 @@
 int main() {
     Grid gamegrid(22,10);
     Game game(gamegrid);
-    GameWindow fenetre=GameWindow();
-    fenetre.animate(game);
+
     Piece test_piece('L');
+    FallingPiece fpiece();
+
+
+
+    game.startGame();
+    std::cout <<"TEST"<<std::endl;
+    
     return 0;
 }

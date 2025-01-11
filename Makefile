@@ -2,14 +2,14 @@
 TARGET = test.x
 
 # Liste des fichiers sources
-SRCS = window.cpp test.cpp piece.cpp
+SRCS = window.cpp test.cpp piece.cpp tetris.cpp color.cpp
 
 # Fichiers objets correspondants
 OBJS = $(SRCS:.cpp=.o)
 
 # Commande de compilation
 CXX = g++
-CXXFLAGS = -Wall -std=c++17
+CXXFLAGS = -Wall -std=c++17 -pthread
 CXXLIBFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 # Règle par défaut
 all: $(TARGET)
