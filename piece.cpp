@@ -2,7 +2,7 @@
 #include <iostream>
 
 Piece::Piece(char type) : mType(type){
-    //Faire un switch case pour les différents cas de lettres
+    /*Constructeur qui permet de définir les pièces à partir de son type*/
     switch (type){ //on définit les coordonnées 0 pour la case que l'on considère être le milieu de la pièce
         case 'I':
             mColor = Cyan;
@@ -41,6 +41,7 @@ Piece::Piece(char type) : mType(type){
 
 
 std::vector<std::vector<int>> FallingPiece::getPointsInGrid() const {
+    /*Cette fonction permet de récupérer les coordonnées dans la grille d'une FallingPiece à un instant donné*/
     std::vector<std::vector<int>> pointsInGrid ;
     for (size_t i = 0; i < mPoints.size(); ++i){
         pointsInGrid.push_back({mPoints[i][0] + mGridPosition[0], mPoints[i][1] + mGridPosition[1]});
@@ -50,6 +51,9 @@ std::vector<std::vector<int>> FallingPiece::getPointsInGrid() const {
 
 
 bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int> gridPosition) {
+    /*Cette fonction permet de vérifier si une pièce (représentée par un ensemble de points placés
+    dans une grille grâce à la position du centre de cet ensemble) rentre dans cette grille et ne 
+    se superpose pas avec une autre pièce déjà présente dans la grille*/
     for (size_t k = 0; k < points.size(); k++)
     {
         int i = points[k][0] + gridPosition[0];
@@ -58,10 +62,7 @@ bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int>
         {
             return false;
         }
-        
-    
     }
-    
     
     for (size_t i = 0; i < points.size(); ++i){
         int newi = points[i][0] + gridPosition[0];

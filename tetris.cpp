@@ -1,4 +1,6 @@
 #include "tetris.hpp"
+#include <cmath>
+#include "piece.hpp"
 
 void Grid::moveLineDown(int lineIndex)
 {
@@ -107,13 +109,47 @@ void Game::animateWindow()
 
         // Afficher le contenu
         window.display();
+
+        updateScore(); //A faire après chaque mouvement de pièce
+        updateLevel();
+        /*Il faudra faire une fonction qui display le score*/
+
+        if (isGameOver('L', {5,0})){
+            std::cout << "Game Over" <<std::endl ;
+        }
+
     }
 }
 
+void Game::updateLevel(){
+    level = floor(counter)/10 ;
+}
+
+void Game::updateScore(){
+    int lignesNumber = grid.checkForFullLines() ;
+    counter += lignesNumber ;
+    if (lignesNumber==1){
+        score += 40*(level+1);
+    }
+    if (lignesNumber==2){
+        score += 100*(level+1);
+    }
+    if (lignesNumber==3){
+        score += 300*(level+1);
+    }
+    if (lignesNumber==4){
+        score += 1200*(level+1);
+    }
+}
+
+bool Game::isGameOver(char type, std::vector<int> centralPosition){
+    Piece piece(type);
+    return checkFit(grid, piece.getPoints(), centralPosition);
+}
 
 void Game::startGame() {
     //TODOLancement des threads éventuels 
-
+    //Grid& grid;
     //lancement de l'affichage
     animateWindow();
 };
