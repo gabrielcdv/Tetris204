@@ -15,7 +15,7 @@ int main() {
     std::cout << fpiece.getColor() << std::endl,
     
     
-
+    
 
     game.startGame();
     std::cout <<"TEST"<<std::endl;
