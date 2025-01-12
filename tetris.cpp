@@ -168,8 +168,8 @@ bool Game::isGameOver(char type, std::vector<int> centralPosition){
     Piece piece(type);
     return checkFit(grid, piece.getPoints(), centralPosition);
 }
-    }
-}
+    
+
 void spawnPieces(Game& game, GameWindow& gameWindow) {
     FallingPiece fallingPiece(game.getGrid(), {3,2}, 'L');
     auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
