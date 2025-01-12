@@ -1,5 +1,7 @@
 #include "tetris.hpp"
-
+#include "piece.hpp"
+#include <thread>
+#include <memory>
 void Grid::moveLineDown(int lineIndex)
 {
     /*
@@ -105,15 +107,61 @@ void Game::animateWindow()
             }
         }
 
+
+        // Dessiner la fallingPiece si il y en a une
+        if (gameWindow.displayFallingPiece)
+        {
+            FallingPiece& fallingPiece = gameWindow.getFallingPiece();
+            std::vector<std::vector<int>> pointsInGrid = fallingPiece.getPointsInGrid();
+            for (size_t k = 0; k < pointsInGrid.size(); k++)
+            {
+                int i = pointsInGrid[k][0];
+                int j = pointsInGrid[k][1];
+                int dimcase=30;
+                sf::RectangleShape square(sf::Vector2f(dimcase, dimcase)); // TODO ne pas hardcoder le 30 (taille d'une case en pixel)
+                square.setPosition(j * dimcase, i * dimcase);
+                square.setFillColor(getSFMLColor(fallingPiece.getColor()));
+                window.draw(square);
+
+            }
+            
+        }
+        
+
         // Afficher le contenu
         window.display();
     }
 }
-
+void spawnPieces(Game& game, GameWindow& gameWindow) {
+    FallingPiece fallingPiece(game.getGrid(), {3,2}, 'L');
+    auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
+    
+    gameWindow.setFallingPiece(std::move(fallingPiecePtr));
+    gameWindow.displayFallingPiece = true;
+    
+    while (true) {
+        // Déplace la pièce vers le bas
+        gameWindow.getFallingPiece().moveDown();
+        // pause entre les déplacements :
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
+    }//TODO : a la place du while true il faut faire while(la piece est pas en bas)
+    // apres il faut la stamp
+    //et recommencer avec une nouvelle piece....
+}
 
 void Game::startGame() {
     //TODOLancement des threads éventuels 
 
+    
+    
+    std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
+
+    // On détache le thread
+    fallingPiecesThread.detach();
+    
+
+
     //lancement de l'affichage
     animateWindow();
 };
+

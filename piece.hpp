@@ -1,3 +1,6 @@
+#ifndef PIECE
+#define PIECE
+#endif
 #pragma once
 #include "color.hpp"
 #include "tetris.hpp"

@@ -2,7 +2,7 @@
 TARGET = test.x
 
 # Liste des fichiers sources
-SRCS = window.cpp test.cpp piece.cpp tetris.cpp color.cpp
+SRCS = test.cpp piece.cpp tetris.cpp color.cpp
 
 # Fichiers objets correspondants
 OBJS = $(SRCS:.cpp=.o)
