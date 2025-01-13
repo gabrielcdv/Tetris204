@@ -15,7 +15,7 @@ void Grid::moveLineDown(int lineIndex)
         std::cout << "Problème d'indice. Impossible de décaler la ligne." << std::endl;
         return;
     }
-
+    std::cout << "Ligne descendue" << lineIndex << std::endl;
     for (size_t i = 0; i < matrix[lineIndex].size(); i++)
     {
         matrix[lineIndex + 1][i] = matrix[lineIndex][i];
@@ -42,7 +42,7 @@ int Grid::checkForFullLines()
         if (isFull) {// Si la ligne i est pleine
             std::cout << "On écrit dans matrix" << std::endl ;
             // Alors on décale toutes les lignes d'au dessus vers le bas
-            for (size_t k = i-1; k >= 0; k--)
+            for (size_t k = i-1; k > 0; k--)
             {
                 moveLineDown(k);
             }
@@ -215,10 +215,10 @@ void spawnPieces(Game& game, GameWindow& gameWindow) {
             // Déplace la pièce vers le bas
             gameWindow.getFallingPiece().moveDown();
 
-            game.updateScore();
-            game.updateLevel();
         }
         gameWindow.getFallingPiece().stamp();
+        game.updateScore();
+        game.updateLevel();
         gameWindow.displayFallingPiece = false;
         //Modification des pièces par la pièce suivante et génération d'une nouvelle pièce aléatoirement
         game.getPiece() = game.getPieceIn1();
