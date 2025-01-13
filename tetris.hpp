@@ -45,10 +45,10 @@ private:
     char pieceIn4 ;
     char pieceIn5 ;
 public:
-    Game(Grid& grid) ;
+    Game(Grid& grid);
     Grid& getGrid() {return grid;};
     void startGame();
-    void animateWindow();
+    const void animateWindow();
     void updateScore();
     int getLevel(){return level;};
     void updateLevel();

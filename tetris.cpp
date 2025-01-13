@@ -27,7 +27,7 @@ int Grid::checkForFullLines()
     et les supprime en décalant les lignes d'au dessus vers le bas.
     Renvoie le nombre de lignes pleines.
     */
-    int nbFullLines=0;
+    int nbFullLines = 0;
     for (size_t i = 0; i < matrix.size(); i++)
     {
         bool isFull=true;
@@ -44,28 +44,46 @@ int Grid::checkForFullLines()
             {
                 moveLineDown(k);
             }
-                       
+
             nbFullLines++;
         }
-        
     }
-    
+
     return nbFullLines;
 };
 
-
-Game::Game(Grid& grid) : grid(grid), level(0), score(0){
+Game::Game(Grid &grid) : grid(grid), level(0), score(0)
+{
+    /*
+    Le but de ce morceau de code est de maximiser l'espace pris par la fenêtre de jeu en tenant
+    compte du fait que les cases doivent avoir la même dimension en pixels.
+    */
     piece = randomPiece() ;
     pieceIn1 = randomPiece() ;
     pieceIn2 = randomPiece() ;
     pieceIn3 = randomPiece() ;
     pieceIn4 = randomPiece() ;
     pieceIn5 = randomPiece() ;
-};
 
-void Game::animateWindow()
+    // calcul de la bonne taille de fenêtre
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    //int width_pxl = desktop.width;
+    int height_pxl = desktop.height;
+
+    // marge en haut et en bas de la fenetre de jeu
+    float margin_height = 0.2;
+
+    int n = floor(height_pxl * (1 - 2 * margin_height) / grid.getGridHeight());
+    gameWindow.setDimCase(n);
+    int window_height = round(n * grid.getGridHeight() / (1 - 2 * margin_height));
+    int window_width = window_height;
+    
+    // On met à jour la taille de fenêtre 
+    gameWindow.getSFWindow().setSize(sf::Vector2u(window_width,window_height));
+};
+const void Game::animateWindow()
 {
-    sf::RenderWindow& window=gameWindow.getSFWindow();
+    sf::RenderWindow &window = gameWindow.getSFWindow();
     // Boucle principale
     while (window.isOpen())
     {
@@ -82,14 +100,10 @@ void Game::animateWindow()
             for (int col = 0; col < grid.getGridWidth(); ++col)
             {
                 // Créer un carré
-                int dimcase=30;
-                sf::RectangleShape square(sf::Vector2f(dimcase, dimcase)); // TODO ne pas hardcoder le 30 (taille d'une case en pixel)
-                square.setPosition(col * dimcase, row * dimcase);
+                sf::RectangleShape square(sf::Vector2f(gameWindow.getDimCase(), gameWindow.getDimCase()));
+                square.setPosition(col * gameWindow.getDimCase(), row * gameWindow.getDimCase());
 
                 // Déterminer la couleur (alternance noir/blanc)
-
-
-
 
                 /*
                 for (size_t i = 0; i < grid.getMatrix().size(); i++)
@@ -98,17 +112,18 @@ void Game::animateWindow()
                     {
                         std::cout << i << "," << j << "->" << grid.getMatrix()[i][j] << std::endl;
                     };
-                    
+
                 }*/
 
-                
                 if (grid.getMatrix()[row][col] == 0) // si case vide
                 {
                     if ((row + col) % 2 == 0)
                         square.setFillColor(sf::Color::Black); // Noir
                     else
-                        square.setFillColor(sf::Color(50,50,50,255)); // Noir moins foncé
-                } else { // On remplit la case de la couleur correspondante
+                        square.setFillColor(sf::Color(50, 50, 50, 255)); // Noir moins foncé
+                }
+                else
+                { // On remplit la case de la couleur correspondante
                     square.setFillColor(getSFMLColor(grid.getMatrix()[row][col]));
                 }
 
@@ -117,61 +132,63 @@ void Game::animateWindow()
             }
         }
 
-
         // Dessiner la fallingPiece si il y en a une
         if (gameWindow.displayFallingPiece)
         {
-            FallingPiece& fallingPiece = gameWindow.getFallingPiece();
+            FallingPiece &fallingPiece = gameWindow.getFallingPiece();
             std::vector<std::vector<int>> pointsInGrid = fallingPiece.getPointsInGrid();
             for (size_t k = 0; k < pointsInGrid.size(); k++)
             {
                 int i = pointsInGrid[k][0];
                 int j = pointsInGrid[k][1];
-                int dimcase=30;
-                sf::RectangleShape square(sf::Vector2f(dimcase, dimcase)); // TODO ne pas hardcoder le 30 (taille d'une case en pixel)
-                square.setPosition(j * dimcase, i * dimcase);
+                sf::RectangleShape square(sf::Vector2f(gameWindow.getDimCase(), gameWindow.getDimCase()));
+                square.setPosition(j * gameWindow.getDimCase(), i * gameWindow.getDimCase());
                 square.setFillColor(getSFMLColor(fallingPiece.getColor()));
                 window.draw(square);
-
             }
-            
         }
-        
 
         // Afficher le contenu
         window.display();
 
         /*TODO Il faudra faire une fonction qui display le score*/
 
-        if (isGameOver('L', {5,0})){
-            std::cout << "Game Over" <<std::endl ;
+        if (isGameOver('L', {5, 0}))
+        {
+            std::cout << "Game Over" << std::endl;
         }
-
     }
 }
 
-void Game::updateLevel(){
-    level = floor(counter)/10 ;
+void Game::updateLevel()
+{
+    level = floor(counter) / 10;
 }
 
-void Game::updateScore(){
-    int lignesNumber = grid.checkForFullLines() ;
-    counter += lignesNumber ;
-    if (lignesNumber==1){
-        score += 40*(level+1);
+void Game::updateScore()
+{
+    int lignesNumber = grid.checkForFullLines();
+    counter += lignesNumber;
+    if (lignesNumber == 1)
+    {
+        score += 40 * (level + 1);
     }
-    if (lignesNumber==2){
-        score += 100*(level+1);
+    if (lignesNumber == 2)
+    {
+        score += 100 * (level + 1);
     }
-    if (lignesNumber==3){
-        score += 300*(level+1);
+    if (lignesNumber == 3)
+    {
+        score += 300 * (level + 1);
     }
-    if (lignesNumber==4){
-        score += 1200*(level+1);
+    if (lignesNumber == 4)
+    {
+        score += 1200 * (level + 1);
     }
 }
 
-bool Game::isGameOver(char type, std::vector<int> centralPosition){
+bool Game::isGameOver(char type, std::vector<int> centralPosition)
+{
     Piece piece(type);
     return checkFit(grid, piece.getPoints(), centralPosition);
 }
@@ -218,19 +235,15 @@ char Game::randomPiece(){
 }
 
 
-void Game::startGame() {
-    //TODOLancement des threads éventuels 
+void Game::startGame()
+{
+    // TODOLancement des threads éventuels
 
-    
-    
     std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
 
     // On détache le thread
     fallingPiecesThread.detach();
-    
 
-
-    //lancement de l'affichage
+    // lancement de l'affichage
     animateWindow();
 };
-
