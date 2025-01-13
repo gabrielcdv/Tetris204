@@ -4,6 +4,8 @@
 #include "color.hpp"
 #include <memory>
 #include <thread>
+#include <queue>
+#include <optional>
 
 class FallingPiece;// Sera défini après dans piece.hpp
 
@@ -13,6 +15,7 @@ class GameWindow {
         bool stopSignal = false;
         std::unique_ptr<FallingPiece> fallingPiecePtr;
         int dimCase=30;
+        std::queue<sf::Event> eventQueue;
     public:
         GameWindow() : window(sf::VideoMode(660, 660), "Fenêtre SFML") {}; // la fenêter sera redimensionnée
         void animate();
@@ -23,4 +26,8 @@ class GameWindow {
         void setDimCase(int dim) {dimCase = dim;};
         FallingPiece& getFallingPiece() {return *fallingPiecePtr;};
         sf::RenderWindow& getSFWindow() {return window;};
+
+        void addEvent(sf::Event event) {eventQueue.push(event);};
+        
+        std::optional<sf::Event> getEvent() ;
 };

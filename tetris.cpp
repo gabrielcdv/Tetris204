@@ -3,6 +3,8 @@
 #include <thread>
 #include <memory>
 #include <cmath>
+#include <queue>
+
 void Grid::moveLineDown(int lineIndex)
 {
     /*
@@ -87,6 +89,11 @@ const void Game::animateWindow()
     // Boucle principale
     while (window.isOpen())
     {
+
+        sf::Event event;
+        while(gameWindow.getSFWindow().pollEvent(event)) {
+            gameWindow.addEvent(event);
+        }
         
 
 
@@ -233,9 +240,10 @@ char Game::randomPiece(){
 
 void manageEvents(Game& game, GameWindow& gameWindow) {
     while (true) {//TODO remplacer par window.isopen
-        sf::Event event;
-        while (gameWindow.getSFWindow().pollEvent(event))
+        auto evt = gameWindow.getEvent();
+        if (evt)
         {
+            sf::Event event = *evt;
             if (event.type == sf::Event::Closed)
                 gameWindow.getSFWindow().close();
             
