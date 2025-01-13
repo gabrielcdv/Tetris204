@@ -39,10 +39,10 @@ private:
     int score ;
     int counter ; //compteur pour connaître le nombre de lignes retirées depuis le début de la partie
 public:
-    Game(Grid& grid) : grid(grid), level(0), score(0){};
+    Game(Grid& grid);
     Grid& getGrid() {return grid;};
     void startGame();
-    void animateWindow();
+    const void animateWindow();
     void updateScore();
     void updateLevel();
 
