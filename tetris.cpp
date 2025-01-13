@@ -73,9 +73,9 @@ Game::Game(Grid &grid) : grid(grid), level(0), score(0)
     // marge en haut et en bas de la fenetre de jeu
     float margin_height = 0.2;
 
-    int n = floor(height_pxl * (1 - 2 * margin_height) / grid.getGridHeight());
-    gameWindow.setDimCase(n);
-    int window_height = round(n * grid.getGridHeight() / (1 - 2 * margin_height));
+    int dimCase = floor(height_pxl * (1 - 2 * margin_height) / grid.getGridHeight());
+    gameWindow.setDimCase(dimCase);
+    int window_height = round(dimCase * grid.getGridHeight() / (1 - 2 * margin_height));
     int window_width = window_height;
     
     // On met à jour la taille de fenêtre 
@@ -87,33 +87,7 @@ const void Game::animateWindow()
     // Boucle principale
     while (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            
-
-            FallingPiece fallingPiece(grid, {3,2}, 'L') ;//TODO A REMPLACER ET METTRE AU BONNE ENDROIT
-
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Right) { // Touche flèche droite
-                    fallingPiece.moveRight();
-                }
-                if (event.key.code == sf::Keyboard::Left) { // Touche flèche gauche
-                    fallingPiece.moveLeft();
-                }
-                if (event.key.code == sf::Keyboard::Down) { // Touche flèche du bas
-                    fallingPiece.moveDown();
-                }
-                if (event.key.code == sf::Keyboard::D) { // Touche D
-                    fallingPiece.rotateRight();
-                }
-                if (event.key.code == sf::Keyboard::Q) { // Touche Q
-                    fallingPiece.rotateLeft();
-                }
-            }
-        }
+        
 
 
         // Dessiner la grille du jeu
@@ -257,15 +231,49 @@ char Game::randomPiece(){
     return type[index];
 }
 
+void manageEvents(Game& game, GameWindow& gameWindow) {
+    while (true) {//TODO remplacer par window.isopen
+        sf::Event event;
+        while (gameWindow.getSFWindow().pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                gameWindow.getSFWindow().close();
+            
+
+
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Right) { // Touche flèche droite
+                    gameWindow.getFallingPiece().moveRight();
+                }
+                if (event.key.code == sf::Keyboard::Left) { // Touche flèche gauche
+                    gameWindow.getFallingPiece().moveLeft();
+                }
+                if (event.key.code == sf::Keyboard::Down) { // Touche flèche du bas
+                    gameWindow.getFallingPiece().moveDown();
+                }
+                if (event.key.code == sf::Keyboard::D) { // Touche D
+                    gameWindow.getFallingPiece().rotateRight();
+                }
+                if (event.key.code == sf::Keyboard::Q) { // Touche Q
+                    gameWindow.getFallingPiece().rotateLeft();
+                }
+            }
+        }
+    }
+}
 
 void Game::startGame()
 {
     // TODOLancement des threads éventuels
 
     std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
-
     // On détache le thread
     fallingPiecesThread.detach();
+
+    std::thread eventsThread(&manageEvents, std::ref(*this), std::ref(gameWindow));
+
+    // On détache le thread
+    eventsThread.detach();
 
     // lancement de l'affichage
     animateWindow();
