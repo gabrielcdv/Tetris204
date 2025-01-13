@@ -6,7 +6,7 @@ Piece::Piece(char type) : mType(type){
     switch (type){ //on définit les coordonnées 0 pour la case que l'on considère être le milieu de la pièce
         case 'I':
             mColor = Cyan;
-            mPoints = { {-2, 0}, {-1, 0}, {0, 0}, {1, 0}};
+            mPoints = { {-1, 0}, {0, 0}, {1, 0}, {2, 0}};
             break;
         
         case 'O':
@@ -76,7 +76,7 @@ bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int>
 }
 
 
-void FallingPiece::rotateRight(){
+void FallingPiece::rotateRight(){ //TODO vérifier que c'est pas le carré
     std::vector<std::vector<int>> newPoints=mPoints;
     // On fait la rotation sur la copie
     for (size_t i = 0; i < newPoints.size(); ++i) {
@@ -96,8 +96,7 @@ void FallingPiece::rotateRight(){
     }
 }
 
-void FallingPiece::rotateLeft(){
-
+void FallingPiece::rotateLeft(){ //TODO vérifier que c'est pas le carré
     std::vector<std::vector<int>> newPoints=mPoints;
     // On fait la rotation sur la copie
     for (size_t i = 0; i < newPoints.size(); ++i) {
@@ -157,3 +156,9 @@ void FallingPiece::stamp() {
    std::cout << "END" << std::endl;
    
 };
+
+
+bool FallingPiece::canMoveDown(){
+    std::vector<int> newPosition = {mGridPosition[0] + 1, mGridPosition[1]};
+    return checkFit(mGrid, mPoints, newPosition) ;
+}

@@ -17,6 +17,7 @@ void Grid::moveLineDown(int lineIndex)
     for (size_t i = 0; i < matrix[lineIndex].size(); i++)
     {
         matrix[lineIndex + 1][i] = matrix[lineIndex][i];
+        matrix[lineIndex][i] = Empty;
     }
 };
 int Grid::checkForFullLines()
@@ -29,14 +30,15 @@ int Grid::checkForFullLines()
     int nbFullLines=0;
     for (size_t i = 0; i < matrix.size(); i++)
     {
-        int isNull=1;
+        bool isFull=true;
         for (size_t j = 0; j < matrix[i].size(); j++)
         {
-            if (matrix[i][j]!=0) {
-                isNull=0;
+            if (matrix[i][j]==Empty) {
+                isFull=false;
             }
         }
-        if (isNull) {// Si la ligne i est nulle
+        if (isFull) {// Si la ligne i est pleine
+            std::cout << "On écrit dans matrix" << std::endl ;
             // Alors on décale toutes les lignes d'au dessus vers le bas
             for (size_t k = 0; k < i; k++)
             {
@@ -52,7 +54,14 @@ int Grid::checkForFullLines()
 };
 
 
-
+Game::Game(Grid& grid) : grid(grid), level(0), score(0){
+    piece = randomPiece() ;
+    pieceIn1 = randomPiece() ;
+    pieceIn2 = randomPiece() ;
+    pieceIn3 = randomPiece() ;
+    pieceIn4 = randomPiece() ;
+    pieceIn5 = randomPiece() ;
+};
 
 void Game::animateWindow()
 {
@@ -132,9 +141,7 @@ void Game::animateWindow()
         // Afficher le contenu
         window.display();
 
-        updateScore(); //A faire après chaque mouvement de pièce
-        updateLevel();
-        /*Il faudra faire une fonction qui display le score*/
+        /*TODO Il faudra faire une fonction qui display le score*/
 
         if (isGameOver('L', {5,0})){
             std::cout << "Game Over" <<std::endl ;
@@ -171,21 +178,45 @@ bool Game::isGameOver(char type, std::vector<int> centralPosition){
     
 
 void spawnPieces(Game& game, GameWindow& gameWindow) {
-    FallingPiece fallingPiece(game.getGrid(), {3,2}, 'L');
-    auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
-    
-    gameWindow.setFallingPiece(std::move(fallingPiecePtr));
-    gameWindow.displayFallingPiece = true;
-    
-    while (true) {
-        // Déplace la pièce vers le bas
-        gameWindow.getFallingPiece().moveDown();
-        // pause entre les déplacements :
-        std::this_thread::sleep_for(std::chrono::milliseconds(800));
-    }//TODO : a la place du while true il faut faire while(la piece est pas en bas)
-    // apres il faut la stamp
-    //et recommencer avec une nouvelle piece....
+    std::vector<int> centralPosition = {1,4}; //TODO ne pas harcoder la position centrale
+
+    while(game.isGameOver(game.getPiece(), centralPosition)){
+        FallingPiece fallingPiece(game.getGrid(), centralPosition, game.getPiece());
+        auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
+        
+        gameWindow.setFallingPiece(std::move(fallingPiecePtr));
+        gameWindow.displayFallingPiece = true;
+
+        while (gameWindow.getFallingPiece().canMoveDown()) {
+            // pause entre les déplacements :
+            std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
+            // Déplace la pièce vers le bas
+            gameWindow.getFallingPiece().moveDown();
+
+            game.updateScore();
+            game.updateLevel();
+        }
+        gameWindow.getFallingPiece().stamp();
+        gameWindow.displayFallingPiece = false;
+        //Modification des pièces par la pièce suivante et génération d'une nouvelle pièce aléatoirement
+        game.getPiece() = game.getPieceIn1();
+        game.getPieceIn1() = game.getPieceIn2();
+        game.getPieceIn2() = game.getPieceIn3();
+        game.getPieceIn3() = game.getPieceIn4();
+        game.getPieceIn4() = game.getPieceIn5();
+        game.getPieceIn5() = game.randomPiece();
+
+    }
 }
+
+char Game::randomPiece(){
+    /*Génère un type de pièce aléatoirement*/
+    char type[] = {'I', 'O', 'T', 'L', 'J', 'Z', 'S'}; 
+    int taille = sizeof(type) / sizeof(char); // Taille du tableau
+    int index = std::rand() % taille;
+    return type[index];
+}
+
 
 void Game::startGame() {
     //TODOLancement des threads éventuels 

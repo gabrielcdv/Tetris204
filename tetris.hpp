@@ -38,14 +38,27 @@ private:
     int level ;
     int score ;
     int counter ; //compteur pour connaître le nombre de lignes retirées depuis le début de la partie
+    char piece ;
+    char pieceIn1 ;
+    char pieceIn2 ;
+    char pieceIn3 ;
+    char pieceIn4 ;
+    char pieceIn5 ;
 public:
-    Game(Grid& grid) : grid(grid), level(0), score(0){};
+    Game(Grid& grid) ;
     Grid& getGrid() {return grid;};
     void startGame();
     void animateWindow();
     void updateScore();
+    int getLevel(){return level;};
     void updateLevel();
-
+    char& getPiece(){return piece ;};
+    char& getPieceIn1(){return pieceIn1 ;};
+    char& getPieceIn2(){return pieceIn2 ;};
+    char& getPieceIn3(){return pieceIn3 ;};
+    char& getPieceIn4(){return pieceIn4 ;};
+    char& getPieceIn5(){return pieceIn5 ;};
+    char randomPiece();
     bool isGameOver(char type, std::vector<int> mGridPosition);
     
 };

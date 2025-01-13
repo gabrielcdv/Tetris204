@@ -1,6 +1,3 @@
-#ifndef PIECE
-#define PIECE
-#endif
 #pragma once
 #include "color.hpp"
 #include "tetris.hpp"
@@ -35,6 +32,7 @@ class FallingPiece : public Piece {
         void rotateRight();
         void rotateLeft();
         void stamp();
+        bool canMoveDown();
 };
 
 bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int> gridPosition);
