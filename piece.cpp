@@ -11,7 +11,7 @@ Piece::Piece(char type) : mType(type){
         
         case 'O':
             mColor = Orange; 
-            mPoints = { {-1, 1}, {0, 1}, {-1, 0}, {0, 0}};
+            mPoints = { {0, 0}, {0, 1}, {1, 0}, {1, 1}};
             break;
         
         case 'T':
@@ -20,7 +20,7 @@ Piece::Piece(char type) : mType(type){
             break;
         case 'L':
             mColor = Purple;
-            mPoints = { {-1, -1}, {-1, 0}, {0, 0}, {1, 0}};
+            mPoints = { {1, 1}, {-1, 0}, {0, 0}, {1, 0}};
             break;
         case 'J':
             mColor = Blue;
@@ -76,7 +76,10 @@ bool checkFit(Grid& grid, std::vector<std::vector<int>> points, std::vector<int>
 }
 
 
-void FallingPiece::rotateRight(){ //TODO vérifier que c'est pas le carré
+void FallingPiece::rotateRight(){
+    if (mType == 'O'){
+        return ;
+    } 
     std::vector<std::vector<int>> newPoints=mPoints;
     // On fait la rotation sur la copie
     for (size_t i = 0; i < newPoints.size(); ++i) {
@@ -96,7 +99,10 @@ void FallingPiece::rotateRight(){ //TODO vérifier que c'est pas le carré
     }
 }
 
-void FallingPiece::rotateLeft(){ //TODO vérifier que c'est pas le carré
+void FallingPiece::rotateLeft(){
+    if (mType == 'O'){
+        return ;
+    } 
     std::vector<std::vector<int>> newPoints=mPoints;
     // On fait la rotation sur la copie
     for (size_t i = 0; i < newPoints.size(); ++i) {

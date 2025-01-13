@@ -9,7 +9,7 @@ sf::Color getSFMLColor(Color color) {
         case Cyan:   return sf::Color::Cyan;
         case Orange: return sf::Color(255, 165, 0);
         case Yellow: return sf::Color::Yellow;
-        case Purple: return sf::Color(128, 0, 128);
+        case Purple: return sf::Color(200, 0, 200);
         case Blue:   return sf::Color::Blue;
         case Red:    return sf::Color::Red;
         case Green:  return sf::Color::Green;

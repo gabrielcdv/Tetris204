@@ -6,6 +6,9 @@
 
 
 int main() {
+    // Initialiser la graine du générateur de nombres aléatoires
+    std::srand(static_cast<unsigned>(std::time(0)));
+    
     Grid gamegrid(22,10);
 
     Game game(gamegrid);

@@ -92,9 +92,31 @@ const void Game::animateWindow()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            
+
+            FallingPiece fallingPiece(grid, {3,2}, 'L') ;//TODO A REMPLACER ET METTRE AU BONNE ENDROIT
+
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Right) { // Touche flèche droite
+                    fallingPiece.moveRight();
+                }
+                if (event.key.code == sf::Keyboard::Left) { // Touche flèche gauche
+                    fallingPiece.moveLeft();
+                }
+                if (event.key.code == sf::Keyboard::Down) { // Touche flèche du bas
+                    fallingPiece.moveDown();
+                }
+                if (event.key.code == sf::Keyboard::D) { // Touche D
+                    fallingPiece.rotateRight();
+                }
+                if (event.key.code == sf::Keyboard::Q) { // Touche Q
+                    fallingPiece.rotateLeft();
+                }
+            }
         }
 
-        // Dessiner la grtille du jeu
+
+        // Dessiner la grille du jeu
         for (int row = 0; row < grid.getGridHeight(); ++row)
         {
             for (int col = 0; col < grid.getGridWidth(); ++col)
@@ -206,7 +228,8 @@ void spawnPieces(Game& game, GameWindow& gameWindow) {
 
         while (gameWindow.getFallingPiece().canMoveDown()) {
             // pause entre les déplacements :
-            std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             // Déplace la pièce vers le bas
             gameWindow.getFallingPiece().moveDown();
 
