@@ -42,7 +42,7 @@ int Grid::checkForFullLines()
         if (isFull) {// Si la ligne i est pleine
             std::cout << "On écrit dans matrix" << std::endl ;
             // Alors on décale toutes les lignes d'au dessus vers le bas
-            for (size_t k = 0; k < i; k++)
+            for (size_t k = i-1; k >= 0; k--)
             {
                 moveLineDown(k);
             }
@@ -54,7 +54,7 @@ int Grid::checkForFullLines()
     return nbFullLines;
 };
 
-Game::Game(Grid &grid) : grid(grid), level(0), score(0)
+Game::Game(Grid &grid) : grid(grid), level(0), score(0), counter(0)
 {
     /*
     Le but de ce morceau de code est de maximiser l'espace pris par la fenêtre de jeu en tenant
@@ -158,7 +158,7 @@ const void Game::animateWindow()
 
         if (isGameOver('L', {5, 0}))
         {
-            std::cout << "Game Over" << std::endl;
+            //std::cout << "Game Over" << std::endl; //TODO
         }
     }
 }
@@ -209,8 +209,9 @@ void spawnPieces(Game& game, GameWindow& gameWindow) {
 
         while (gameWindow.getFallingPiece().canMoveDown()) {
             // pause entre les déplacements :
-            //std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::cout << "Niveau" << game.getLevel() << std::endl ;
+            std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(200));
             // Déplace la pièce vers le bas
             gameWindow.getFallingPiece().moveDown();
 
