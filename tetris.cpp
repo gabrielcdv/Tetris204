@@ -24,36 +24,40 @@ void Grid::moveLineDown(int lineIndex)
 };
 int Grid::checkForFullLines()
 {
-    /*
-    Cherche les lignes pleines dans la matrice de jeu (aucune case vide dans la ligne)
-    et les supprime en décalant les lignes d'au dessus vers le bas.
-    Renvoie le nombre de lignes pleines.
-    */
     int nbFullLines = 0;
-    for (size_t i = 0; i < matrix.size(); i++)
+    for (int i = matrix.size() - 1; i >= 0; i--)
     {
-        bool isFull=true;
+        bool isFull = true;
         for (size_t j = 0; j < matrix[i].size(); j++)
         {
-            if (matrix[i][j]==Empty) {
-                isFull=false;
+            if (matrix[i][j] == Empty) {
+                isFull = false;
+                break;
             }
         }
-        if (isFull) {// Si la ligne i est pleine
-            std::cout << "On écrit dans matrix" << std::endl ;
-            // Alors on décale toutes les lignes d'au dessus vers le bas
-            for (size_t k = i-1; k > 0; k--)
+        
+        if (isFull) {
+            // Si la ligne est pleine, on décale toutes les lignes au-dessus
+            // d'une position vers le bas
+            for (int k = i; k >= 1; k--)
             {
-                moveLineDown(k);
+                for (size_t j = 0; j < matrix[k].size(); j++)
+                {
+                    matrix[k][j] = matrix[k-1][j];
+                }
             }
-
+            // On vide la ligne du haut (ne pas oublier)
+            for (size_t j = 0; j < matrix[0].size(); j++)
+            {
+                matrix[0][j] = Empty;
+            }
             nbFullLines++;
+            // Comme on a décalé les lignes vers le bas, il faut revérifier la ligne courante !
+            i++;
         }
     }
-
     return nbFullLines;
-};
-
+}
 Game::Game(Grid &grid) : grid(grid), level(0), score(0), counter(0)
 {
     /*
