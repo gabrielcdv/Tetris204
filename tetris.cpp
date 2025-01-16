@@ -24,26 +24,33 @@ void Grid::moveLineDown(int lineIndex)
 };
 int Grid::checkForFullLines()
 {
+    /*
+    Cherche les lignes pleines dans la matrice de jeu (aucune case vide dans la ligne)
+    et les supprime en décalant les lignes d'au dessus vers le bas.
+    Renvoie le nombre de lignes pleines.
+    */
     int nbFullLines = 0;
     for (int i = matrix.size() - 1; i >= 0; i--)
     {
         bool isFull = true;
         for (size_t j = 0; j < matrix[i].size(); j++)
         {
-            if (matrix[i][j] == Empty) {
+            if (matrix[i][j] == Empty)
+            {
                 isFull = false;
                 break;
             }
         }
-        
-        if (isFull) {
+
+        if (isFull)
+        {
             // Si la ligne est pleine, on décale toutes les lignes au-dessus
             // d'une position vers le bas
             for (int k = i; k >= 1; k--)
             {
                 for (size_t j = 0; j < matrix[k].size(); j++)
                 {
-                    matrix[k][j] = matrix[k-1][j];
+                    matrix[k][j] = matrix[k - 1][j];
                 }
             }
             // On vide la ligne du haut (ne pas oublier)
@@ -64,42 +71,98 @@ Game::Game(Grid &grid) : grid(grid), level(0), score(0), counter(0)
     Le but de ce morceau de code est de maximiser l'espace pris par la fenêtre de jeu en tenant
     compte du fait que les cases doivent avoir la même dimension en pixels.
     */
-    piece = randomPiece() ;
-    pieceIn1 = randomPiece() ;
-    pieceIn2 = randomPiece() ;
-    pieceIn3 = randomPiece() ;
-    pieceIn4 = randomPiece() ;
-    pieceIn5 = randomPiece() ;
+    piece = randomPiece();
+    pieceIn1 = randomPiece();
+    pieceIn2 = randomPiece();
+    pieceIn3 = randomPiece();
+    pieceIn4 = randomPiece();
+    pieceIn5 = randomPiece();
 
     // calcul de la bonne taille de fenêtre
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    //int width_pxl = desktop.width;
+    // int width_pxl = desktop.width;
     int height_pxl = desktop.height;
 
     // marge en haut et en bas de la fenetre de jeu
-    float margin_height = 0.2;
+    float margin_height = 0.02;
 
     int dimCase = floor(height_pxl * (1 - 2 * margin_height) / grid.getGridHeight());
     gameWindow.setDimCase(dimCase);
     int window_height = round(dimCase * grid.getGridHeight() / (1 - 2 * margin_height));
     int window_width = window_height;
-    
-    // On met à jour la taille de fenêtre 
-    gameWindow.getSFWindow().setSize(sf::Vector2u(window_width,window_height));
+
+    // On met à jour la taille de fenêtre
+    // gameWindow.getSFWindow().setSize(sf::Vector2u(window_width,window_height));
+    gameWindow.getSFWindow().create(sf::VideoMode(window_width, window_height), "Tetris204", sf::Style::Default);
 };
+
+void initScoreBox(sf::Font& font, sf::Text& scoreLabel, sf::Text& scoreValue, int xd) {
+    if (!font.loadFromFile("resources/font.ttf"))// Chemin par rapport à l'exécutable !
+    {
+        throw std::runtime_error("Failed to load font");
+    }
+
+    scoreLabel.setFont(font);
+    scoreLabel.setString("LEVEL");
+    scoreLabel.setCharacterSize(40);
+    scoreLabel.setFillColor(sf::Color::White);
+    scoreLabel.setPosition(xd, 100);
+
+    scoreValue.setFont(font);
+    scoreValue.setCharacterSize(40);
+    scoreValue.setFillColor(sf::Color::White);
+    scoreValue.setPosition(xd + scoreLabel.getGlobalBounds().width + 10, 100);
+}
+
 const void Game::animateWindow()
 {
+
     sf::RenderWindow &window = gameWindow.getSFWindow();
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    // gameWindow.getSFWindow().setView(gameWindow.getSFWindow().getDefaultView());
+    //  Calcul des offset pour l'interface
+    sf::Vector2u windowSize = window.getSize();
+    unsigned int windowWidth = windowSize.x;
+    unsigned int windowHeight = windowSize.y;
+    unsigned int gridHeight = gameWindow.getDimCase() * getGrid().getGridHeight();
+    unsigned int gridWidth = gameWindow.getDimCase() * getGrid().getGridWidth();
+
+    // Il faut afficher la grille de jeu au milieu.
+    int gridOffsetX = (windowWidth - gridWidth) / 2;
+    int gridOffsetY = (windowHeight - gridHeight) / 2;
+
+    // Calcul pour le carré de score
+    //  xd et xf représentent les abscisses de début et de fin du carré de score
+    float margin_width_score = 0.05;
+
+    // largeur restante à droite de la grille
+    int width_right = (windowWidth - gridWidth) / 2;
+    int xd = (windowWidth + gridWidth) / 2 + margin_width_score * width_right;
+
+
+    sf::Font font;
+    
+
+    sf::Text scoreLabel;
+    sf::Text scoreValue;
+
+    initScoreBox(font, scoreLabel, scoreValue, xd);
+    window.draw(scoreLabel);
+    window.draw(scoreValue);
+
+
     // Boucle principale
     while (window.isOpen())
     {
+            scoreValue.setString(std::to_string(getLevel()));
+
 
         sf::Event event;
-        while(gameWindow.getSFWindow().pollEvent(event)) {
+        while (gameWindow.getSFWindow().pollEvent(event))
+        {
             gameWindow.addEvent(event);
         }
-        
-
 
         // Dessiner la grille du jeu
         for (int row = 0; row < grid.getGridHeight(); ++row)
@@ -108,8 +171,7 @@ const void Game::animateWindow()
             {
                 // Créer un carré
                 sf::RectangleShape square(sf::Vector2f(gameWindow.getDimCase(), gameWindow.getDimCase()));
-                square.setPosition(col * gameWindow.getDimCase(), row * gameWindow.getDimCase());
-
+                square.setPosition(gridOffsetX + col * gameWindow.getDimCase(), gridOffsetY + row * gameWindow.getDimCase());
                 // Déterminer la couleur (alternance noir/blanc)
 
                 /*
@@ -149,20 +211,20 @@ const void Game::animateWindow()
                 int i = pointsInGrid[k][0];
                 int j = pointsInGrid[k][1];
                 sf::RectangleShape square(sf::Vector2f(gameWindow.getDimCase(), gameWindow.getDimCase()));
-                square.setPosition(j * gameWindow.getDimCase(), i * gameWindow.getDimCase());
+                square.setPosition(gridOffsetX + j * gameWindow.getDimCase(), gridOffsetY + i * gameWindow.getDimCase());
                 square.setFillColor(getSFMLColor(fallingPiece.getColor()));
                 window.draw(square);
             }
         }
+        window.draw(scoreLabel);
+        window.draw(scoreValue);
 
         // Afficher le contenu
         window.display();
 
-        /*TODO Il faudra faire une fonction qui display le score*/
 
         if (isGameOver('L', {5, 0}))
         {
-            //std::cout << "Game Over" << std::endl; //TODO
         }
     }
 }
@@ -199,75 +261,82 @@ bool Game::isGameOver(char type, std::vector<int> centralPosition)
     Piece piece(type);
     return checkFit(grid, piece.getPoints(), centralPosition);
 }
-    
 
-void spawnPieces(Game& game, GameWindow& gameWindow) {
-    std::vector<int> centralPosition = {1,4}; //TODO ne pas harcoder la position centrale
+void spawnPieces(Game &game, GameWindow &gameWindow)
+{
+    std::vector<int> centralPosition = {1, 4}; // TODO ne pas harcoder la position centrale
 
-    while(game.isGameOver(game.getPiece(), centralPosition)){
+    while (game.isGameOver(game.getPiece(), centralPosition))
+    {
         FallingPiece fallingPiece(game.getGrid(), centralPosition, game.getPiece());
         auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
-        
+
         gameWindow.setFallingPiece(std::move(fallingPiecePtr));
         gameWindow.displayFallingPiece = true;
 
-        while (gameWindow.getFallingPiece().canMoveDown()) {
+        while (gameWindow.getFallingPiece().canMoveDown())
+        {
             // pause entre les déplacements :
-            std::cout << "Niveau" << game.getLevel() << std::endl ;
-            std::this_thread::sleep_for(std::chrono::milliseconds(800-(game.getLevel()*200)));
-            //std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            // Déplace la pièce vers le bas
+            //std::cout << "Niveau" << game.getLevel() << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(800 - (game.getLevel() * 200)));
+            // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            //  Déplace la pièce vers le bas
             gameWindow.getFallingPiece().moveDown();
-
         }
         gameWindow.getFallingPiece().stamp();
         game.updateScore();
         game.updateLevel();
         gameWindow.displayFallingPiece = false;
-        //Modification des pièces par la pièce suivante et génération d'une nouvelle pièce aléatoirement
+        // Modification des pièces par la pièce suivante et génération d'une nouvelle pièce aléatoirement
         game.getPiece() = game.getPieceIn1();
         game.getPieceIn1() = game.getPieceIn2();
         game.getPieceIn2() = game.getPieceIn3();
         game.getPieceIn3() = game.getPieceIn4();
         game.getPieceIn4() = game.getPieceIn5();
         game.getPieceIn5() = game.randomPiece();
-
     }
 }
 
-char Game::randomPiece(){
+char Game::randomPiece()
+{
     /*Génère un type de pièce aléatoirement*/
-    char type[] = {'I', 'O', 'T', 'L', 'J', 'Z', 'S'}; 
+    char type[] = {'I', 'O', 'T', 'L', 'J', 'Z', 'S'};
     int taille = sizeof(type) / sizeof(char); // Taille du tableau
     int index = std::rand() % taille;
     return type[index];
 }
 
-void manageEvents(Game& game, GameWindow& gameWindow) {
-    while (true) {//TODO remplacer par window.isopen
+void manageEvents(Game &game, GameWindow &gameWindow)
+{
+    while (true)
+    { // TODO remplacer par window.isopen
         auto evt = gameWindow.getEvent();
         if (evt)
         {
             sf::Event event = *evt;
             if (event.type == sf::Event::Closed)
                 gameWindow.getSFWindow().close();
-            
 
-
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Right) { // Touche flèche droite
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Right)
+                { // Touche flèche droite
                     gameWindow.getFallingPiece().moveRight();
                 }
-                if (event.key.code == sf::Keyboard::Left) { // Touche flèche gauche
+                if (event.key.code == sf::Keyboard::Left)
+                { // Touche flèche gauche
                     gameWindow.getFallingPiece().moveLeft();
                 }
-                if (event.key.code == sf::Keyboard::Down) { // Touche flèche du bas
+                if (event.key.code == sf::Keyboard::Down)
+                { // Touche flèche du bas
                     gameWindow.getFallingPiece().moveDown();
                 }
-                if (event.key.code == sf::Keyboard::D) { // Touche D
+                if (event.key.code == sf::Keyboard::D)
+                { // Touche D
                     gameWindow.getFallingPiece().rotateRight();
                 }
-                if (event.key.code == sf::Keyboard::Q) { // Touche Q
+                if (event.key.code == sf::Keyboard::Q)
+                { // Touche Q
                     gameWindow.getFallingPiece().rotateLeft();
                 }
             }
