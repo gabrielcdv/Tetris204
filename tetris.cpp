@@ -96,67 +96,158 @@ Game::Game(Grid &grid) : grid(grid), level(0), score(0), counter(0)
     gameWindow.getSFWindow().create(sf::VideoMode(window_width, window_height), "Tetris204", sf::Style::Default);
 };
 
-void initScoreBox(sf::Font& font, sf::Text& scoreLabel, sf::Text& scoreValue, int xd) {
-    if (!font.loadFromFile("resources/font.ttf"))// Chemin par rapport à l'exécutable !
+void initScoreBox(sf::Font &font, sf::Text &scoreLabel, sf::Text &scoreValue, int xd)
+{
+    if (!font.loadFromFile("resources/font.ttf")) // Chemin par rapport à l'exécutable !
     {
         throw std::runtime_error("Failed to load font");
     }
+    
 
     scoreLabel.setFont(font);
     scoreLabel.setString("LEVEL");
     scoreLabel.setCharacterSize(40);
     scoreLabel.setFillColor(sf::Color::White);
-    scoreLabel.setPosition(xd, 100);
-
+    scoreLabel.setPosition(xd, 100); // TODO : centrer avec getGlobalBounds().width
+    
     scoreValue.setFont(font);
     scoreValue.setCharacterSize(40);
     scoreValue.setFillColor(sf::Color::White);
     scoreValue.setPosition(xd + scoreLabel.getGlobalBounds().width + 10, 100);
+    
+}
+void initNextPieces(sf::Font &font, sf::Text &label, int xd)
+{
+
+    label.setFont(font);
+    label.setString("NEXT PIECES :");
+    label.setCharacterSize(40);
+    label.setFillColor(sf::Color::White);
+    label.setPosition(xd, 100);
+}
+void drawPreviewPiece(Game& game, GameWindow& gameWindow, Piece& piece, int dimcase, int currentX, int currentY, int& drawnCasesHeight) {
+    //On la met à l'horizontale si besoin :
+    if (piece.getRotateForPreview()) piece.rotateLeftNoCheck();
+    //On dessine
+    for (size_t k = 0; k < piece.getPoints().size(); k++)
+            {
+                int i = piece.getPoints()[k][0];
+                int j = piece.getPoints()[k][1];
+                sf::RectangleShape square(sf::Vector2f(dimcase, dimcase));
+                square.setPosition(currentX + j * dimcase, currentY + i * dimcase);
+                square.setFillColor(getSFMLColor(piece.getColor()));
+                gameWindow.getSFWindow().draw(square);
+            }
+    drawnCasesHeight+=piece.getWidth() + 1;
 }
 
+void drawNextPieces(Game &game, GameWindow &gameWindow, int remainingHeightRight, int width_right, int windowHeight, int WindowWidth) {
+    // On va calculer la plus grande taille de case possible, en largeur et en hauteur et garder le minimum
+
+    //En largeur :
+    float margin_width=0.025;
+    int dimcase=((1 - 2*margin_width) * width_right) / 6; // Il faut 6 cases de large (4 max de large pour les pieces sur le coté, plus 2 pour centrer)
+
+    // En hauteur :
+    float margin_height=0.025;
+    int dimcase2=((1 - 2*margin_height) * remainingHeightRight) / 16; // 2 de haut*5 + 6 d'espacement
+    
+    if (dimcase2<dimcase) dimcase=dimcase2;// On utilise maintenant dimcase
+
+    //Dessin des pièces
+    int xOrigin = WindowWidth - (1 - 2*margin_width) * width_right;
+    int yOrigin = windowHeight - (1 - 2*margin_height) * remainingHeightRight;
+    int drawnCasesHeight = 0; // Compteur du nombre de cases imprimées en hauteur (pour espacer régulièrement les pièces)
+
+    //Ces variables serviront de curseur :
+    int currentX = xOrigin + 2 * dimcase;
+    int currentY = yOrigin + dimcase;
+
+    //Première pièce
+    Piece piece1 = Piece(game.getPieceIn1());
+    drawPreviewPiece(game, gameWindow, piece1, dimcase, currentX, currentY, drawnCasesHeight);
+
+
+
+    //Deuxième pièce :
+    currentY = yOrigin + dimcase * (1 + drawnCasesHeight);
+    Piece piece2 = Piece(game.getPieceIn2());
+    drawPreviewPiece(game, gameWindow, piece2, dimcase, currentX, currentY, drawnCasesHeight);
+
+    //Troixème pièce :
+    currentY = yOrigin + dimcase * (1 + drawnCasesHeight);
+    Piece piece3 = Piece(game.getPieceIn3());
+    drawPreviewPiece(game, gameWindow, piece3, dimcase, currentX, currentY, drawnCasesHeight);
+
+    //Quatrième pièce :
+    currentY = yOrigin + dimcase * (1 + drawnCasesHeight);
+    Piece piece4 = Piece(game.getPieceIn4());
+    drawPreviewPiece(game, gameWindow, piece4, dimcase, currentX, currentY, drawnCasesHeight);
+
+    //Cinquième pièce :
+    currentY = yOrigin + dimcase * (1 + drawnCasesHeight);
+    Piece piece5 = Piece(game.getPieceIn5());
+    drawPreviewPiece(game, gameWindow, piece5, dimcase, currentX, currentY, drawnCasesHeight);
+    
+    
+    
+
+
+};
 const void Game::animateWindow()
 {
 
-    sf::RenderWindow &window = gameWindow.getSFWindow();
+        sf::RenderWindow &window = gameWindow.getSFWindow();
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    // gameWindow.getSFWindow().setView(gameWindow.getSFWindow().getDefaultView());
-    //  Calcul des offset pour l'interface
-    sf::Vector2u windowSize = window.getSize();
-    unsigned int windowWidth = windowSize.x;
-    unsigned int windowHeight = windowSize.y;
-    unsigned int gridHeight = gameWindow.getDimCase() * getGrid().getGridHeight();
-    unsigned int gridWidth = gameWindow.getDimCase() * getGrid().getGridWidth();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        // gameWindow.getSFWindow().setView(gameWindow.getSFWindow().getDefaultView());
+        //  Calcul des offset pour l'interface
+        sf::Vector2u windowSize = window.getSize();
+        unsigned int windowWidth = windowSize.x;
+        unsigned int windowHeight = windowSize.y;
+        unsigned int gridHeight = gameWindow.getDimCase() * getGrid().getGridHeight();
+        unsigned int gridWidth = gameWindow.getDimCase() * getGrid().getGridWidth();
 
-    // Il faut afficher la grille de jeu au milieu.
-    int gridOffsetX = (windowWidth - gridWidth) / 2;
-    int gridOffsetY = (windowHeight - gridHeight) / 2;
+        // Il faut afficher la grille de jeu au milieu.
+        int gridOffsetX = (windowWidth - gridWidth) / 2;
+        int gridOffsetY = (windowHeight - gridHeight) / 2;
 
-    // Calcul pour le carré de score
-    //  xd et xf représentent les abscisses de début et de fin du carré de score
-    float margin_width_score = 0.05;
+        // Calcul pour le carré de score
+        //  xd et xf représentent les abscisses de début et de fin du carré de score
+        float margin_width_score = 0.05;
 
-    // largeur restante à droite de la grille
-    int width_right = (windowWidth - gridWidth) / 2;
-    int xd = (windowWidth + gridWidth) / 2 + margin_width_score * width_right;
+        // largeur restante à gauche et à droite de la grille
+        int width_left = (windowWidth - gridWidth) / 2;
+        int width_right = (windowWidth - gridWidth) / 2;
+        int xd = margin_width_score * width_left;
+        //(windowWidth + gridWidth) / 2 + margin_width_score * width_right
 
+        sf::Font font;
+        sf::Text scoreLabel;
+        sf::Text scoreValue;
 
-    sf::Font font;
-    
-
-    sf::Text scoreLabel;
-    sf::Text scoreValue;
-
-    initScoreBox(font, scoreLabel, scoreValue, xd);
+        initScoreBox(font, scoreLabel, scoreValue, xd);
     window.draw(scoreLabel);
     window.draw(scoreValue);
 
 
+
+    // Affichage du label des prochaines pièces
+    sf::Text nextPiecesLabel;
+    xd = (windowWidth + gridWidth) / 2 + margin_width_score * width_right;
+    initNextPieces(font, nextPiecesLabel, xd);
+    window.draw(nextPiecesLabel);
+
+    // Taille restante en pixels en dessous du label 'Next Pieces :'
+    int remainingHeightRight = windowHeight - (nextPiecesLabel.getPosition().y + nextPiecesLabel.getGlobalBounds().height);
+    
+    drawNextPieces(*this, gameWindow, remainingHeightRight, width_right, windowHeight, windowWidth);
+    
     // Boucle principale
     while (window.isOpen())
     {
-            scoreValue.setString(std::to_string(getLevel()));
-
+        window.clear();
+        scoreValue.setString(std::to_string(getLevel()));
 
         sf::Event event;
         while (gameWindow.getSFWindow().pollEvent(event))
@@ -218,14 +309,16 @@ const void Game::animateWindow()
         }
         window.draw(scoreLabel);
         window.draw(scoreValue);
+        window.draw(nextPiecesLabel);
+        drawNextPieces(*this, gameWindow, remainingHeightRight, width_right, windowHeight, windowWidth);
 
         // Afficher le contenu
         window.display();
 
-
         if (isGameOver('L', {5, 0}))
         {
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));// Economiser cpu
     }
 }
 
@@ -277,7 +370,7 @@ void spawnPieces(Game &game, GameWindow &gameWindow)
         while (gameWindow.getFallingPiece().canMoveDown())
         {
             // pause entre les déplacements :
-            //std::cout << "Niveau" << game.getLevel() << std::endl;
+            // std::cout << "Niveau" << game.getLevel() << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(800 - (game.getLevel() * 200)));
             // std::this_thread::sleep_for(std::chrono::milliseconds(200));
             //  Déplace la pièce vers le bas
@@ -308,8 +401,8 @@ char Game::randomPiece()
 
 void manageEvents(Game &game, GameWindow &gameWindow)
 {
-    while (true)
-    { // TODO remplacer par window.isopen
+    while (gameWindow.getSFWindow().isOpen())
+    {
         auto evt = gameWindow.getEvent();
         if (evt)
         {
@@ -342,6 +435,7 @@ void manageEvents(Game &game, GameWindow &gameWindow)
             }
         }
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));// Economiser cpu
 }
 
 void Game::startGame()

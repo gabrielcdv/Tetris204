@@ -8,12 +8,17 @@ class Piece{
         std::vector<std::vector<int>> mPoints ;
         char mType ;
         Color mColor ;
+        bool rotateForPreview; // Faut-il tourner la pièce pour qu'elle soit horizontale pour l'aperçu (next pieces)
+        int width = 2; //Largeur en blocs quand la pièce est verticale
     public :
         Piece()=default;
         std::vector<std::vector<int>> getPoints() const {return mPoints ;};
         char getType() const {return mType ;};
         Color getColor() const {return mColor ;};
         Piece(char type);
+        bool getRotateForPreview() {return rotateForPreview;};
+        void rotateLeftNoCheck();// Effectue une rotation (distinct de FallingPiece::rotateLeft d'ou le NoCheck)
+        int getWidth() {return width;};
 };
 
 class FallingPiece : public Piece {
