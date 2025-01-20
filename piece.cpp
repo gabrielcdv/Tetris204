@@ -88,7 +88,7 @@ void FallingPiece::rotateRight(){
             newPoints[i][0] = newi ;
             newPoints[i][1] = newj;
         }
-    if (checkFit(mGrid, newPoints, mGridPosition)){
+    if (!getAnchor() && checkFit(mGrid, newPoints, mGridPosition)){
         //On fait vraiment la rotation
         for (size_t i = 0; i < mPoints.size(); ++i) {
             int newi = mPoints[i][1];
@@ -96,6 +96,7 @@ void FallingPiece::rotateRight(){
             mPoints[i][0] = newi ;
             mPoints[i][1] = newj;
         }
+        checkReachedBottom();
     }
 }
 
@@ -112,38 +113,47 @@ void FallingPiece::rotateLeft(){
             newPoints[i][1] = newj;
         }
 
-    if (checkFit(mGrid, newPoints, mGridPosition)){
+    if (!getAnchor() && checkFit(mGrid, newPoints, mGridPosition)){
         for (size_t i = 0; i < mPoints.size(); ++i) {
             int newi = - mPoints[i][1];
             int newj = mPoints[i][0];            
             mPoints[i][0] = newi ;
             mPoints[i][1] = newj;         
         }
+        checkReachedBottom();
     }
 }
 
 void FallingPiece::moveRight(){ 
     std::vector<int> newPosition = {mGridPosition[0], mGridPosition[1] + 1};
-    if (checkFit(mGrid, mPoints, newPosition)){
+    if (!getAnchor() && checkFit(mGrid, mPoints, newPosition)){
         mGridPosition[1]= mGridPosition[1]+1;
+        checkReachedBottom();
     }
 };
 
 void FallingPiece::moveLeft(){
     std::vector<int> newPosition = {mGridPosition[0], mGridPosition[1] - 1};
-    if (checkFit(mGrid, mPoints, newPosition)){
+    if (!getAnchor() && checkFit(mGrid, mPoints, newPosition)){
         mGridPosition[1]= mGridPosition[1]-1;
+        checkReachedBottom();
     }
 };
 
 void FallingPiece::moveDown(){
     std::vector<int> newPosition = {mGridPosition[0] + 1, mGridPosition[1]};
-    if (checkFit(mGrid, mPoints, newPosition)){
+    if (!getAnchor() && checkFit(mGrid, mPoints, newPosition)){
         mGridPosition[0]= mGridPosition[0]+1;
+        checkReachedBottom();
     }
 };
 
-
+void FallingPiece::checkReachedBottom() {
+    if (!canMoveDown())
+    {
+        setAnchor(true);
+    }
+}
 void FallingPiece::stamp() {
     std::cout << "START" << std::endl;
     /*
