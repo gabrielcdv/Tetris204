@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <mutex>
+#include <SFML/Network.hpp>
 #include "window.hpp"
 #include "color.hpp"
 
@@ -37,16 +39,22 @@ private:
     GameWindow gameWindow;
     int level ;
     int score ;
-    int counter ; //compteur pour connaître le nombre de lignes retirées depuis le début de la partie
+    int counter ; // Compteur pour connaître le nombre de lignes retirées depuis le début de la partie
     char piece ;
     char pieceIn1 ;
     char pieceIn2 ;
     char pieceIn3 ;
     char pieceIn4 ;
     char pieceIn5 ;
+    bool multiplayer;
+    std::string enemyGrid;
+    std::mutex enemyGridMutex; // Mutex pour éviter lecture/écriture simultanée
+    sf::TcpSocket& enemySocket;
 public:
-    Game(Grid& grid);
+    Game(Grid& grid, bool multiplayer, sf::TcpSocket& enemySocket);
+    Game(Grid& grid) : Game(grid, false, enemySocket) {};
     Grid& getGrid() {return grid;};
+    GameWindow& getWindow() {return gameWindow;};
     void startGame();
     const void animateWindow();
     void updateScore();
@@ -60,6 +68,9 @@ public:
     char& getPieceIn5(){return pieceIn5 ;};
     char randomPiece();
     bool isGameOver(char type, std::vector<int> mGridPosition);
+    bool isMultiplayer() {return multiplayer;};
+    void setEnemyGrid(std::string str);
+    std::string getEnemyGrid();
     
 };
 

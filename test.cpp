@@ -11,7 +11,7 @@ int main() {
     
     Grid gamegrid(22,10);
 
-    Game game(gamegrid);
+    Game game(gamegrid, true);
 
     Piece test_piece('L');
     FallingPiece fpiece(gamegrid, {3,2}, 'L');
@@ -20,7 +20,7 @@ int main() {
     
     
 
-    game.startGame();
+    game.startGame(false);
     std::cout <<"TEST"<<std::endl;
     
     return 0;
