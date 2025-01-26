@@ -39,6 +39,7 @@ private:
     GameWindow gameWindow;
     int level ;
     int score ;
+    int enemyScore;
     int counter ; // Compteur pour connaître le nombre de lignes retirées depuis le début de la partie
     char piece ;
     char pieceIn1 ;
@@ -59,6 +60,7 @@ public:
     const void animateWindow();
     void updateScore();
     int getLevel(){return level;};
+    int getScore(){return score;};
     void updateLevel();
     char& getPiece(){return piece ;};
     char& getPieceIn1(){return pieceIn1 ;};

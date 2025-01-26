@@ -100,23 +100,30 @@ Game::Game(Grid &grid, bool multiplayer, sf::TcpSocket &socket) : grid(grid), le
     gameWindow.getSFWindow().create(sf::VideoMode(window_width, window_height), "Tetris204", sf::Style::Default);
 };
 
-void initScoreBox(sf::Font &font, sf::Text &scoreLabel, sf::Text &scoreValue, int xd)
+void initScoreBox(sf::Font &font, sf::Text &scoreDisplay, sf::Text &enemyScoreDisplay, sf::Text &levelDisplay, int xd, int windowWidth)
 {
     if (!font.loadFromFile("resources/font.ttf")) // Chemin par rapport à l'exécutable !
     {
         throw std::runtime_error("Failed to load font");
     }
 
-    scoreLabel.setFont(font);
-    scoreLabel.setString("LEVEL");
-    scoreLabel.setCharacterSize(40);
-    scoreLabel.setFillColor(sf::Color::White);
-    scoreLabel.setPosition(xd, 100); // TODO : centrer avec getGlobalBounds().width
+    scoreDisplay.setFont(font);
+    scoreDisplay.setString("SCORE: 0");
+    scoreDisplay.setCharacterSize(40);
+    scoreDisplay.setFillColor(sf::Color::White);
+    scoreDisplay.setPosition(xd, 100); // TODO : centrer avec getGlobalBounds().width
 
-    scoreValue.setFont(font);
-    scoreValue.setCharacterSize(40);
-    scoreValue.setFillColor(sf::Color::White);
-    scoreValue.setPosition(xd + scoreLabel.getGlobalBounds().width + 10, 100);
+    enemyScoreDisplay.setFont(font);
+    enemyScoreDisplay.setString("SCORE: 0");
+    enemyScoreDisplay.setCharacterSize(30);
+    enemyScoreDisplay.setFillColor(sf::Color::White);
+    enemyScoreDisplay.setPosition(xd + windowWidth, 100);
+
+    levelDisplay.setFont(font);
+    levelDisplay.setString("LEVEL: 0");
+    levelDisplay.setCharacterSize(40);
+    levelDisplay.setFillColor(sf::Color::White);
+    levelDisplay.setPosition(xd, 200); // TODO : centrer avec getGlobalBounds().width
 }
 void initNextPieces(sf::Font &font, sf::Text &label, int xd)
 {
@@ -194,13 +201,12 @@ void drawNextPieces(Game &game, GameWindow &gameWindow, int remainingHeightRight
     drawPreviewPiece(game, gameWindow, piece5, dimcase, currentX, currentY, drawnCasesHeight);
 };
 
-void initEndDisplays(sf::RectangleShape &band, sf::RenderWindow &window, sf::Font &font, sf::Text& gameOverText, sf::Text &wonText, sf::Text &lostText)
+void initEndDisplays(sf::RectangleShape &band, sf::RenderWindow &window, sf::Font &font, sf::Text &gameOverText, sf::Text &wonText, sf::Text &lostText)
 {
     band.setSize(sf::Vector2f(window.getSize().x, window.getSize().y * 0.2));
     band.setPosition(0, window.getSize().y * 0.4);
     band.setFillColor(sf::Color(0, 0, 0, 200)); // Noir semi-transparent
 
-    
     gameOverText.setFont(font);
     gameOverText.setString("GAME OVER");
     gameOverText.setCharacterSize(120);
@@ -209,10 +215,9 @@ void initEndDisplays(sf::RectangleShape &band, sf::RenderWindow &window, sf::Fon
     // Centrer le texte dans la bande
     sf::FloatRect textBounds = gameOverText.getLocalBounds();
     gameOverText.setOrigin(textBounds.left + textBounds.width * 0.5f,
-                      textBounds.top + textBounds.height * 0.5f);
+                           textBounds.top + textBounds.height * 0.5f);
     gameOverText.setPosition(window.getSize().x * 0.5f,
                              window.getSize().y * 0.5f);
-    
 
     wonText.setFont(font);
     wonText.setString("YOU WIN");
@@ -270,12 +275,18 @@ const void Game::animateWindow()
     //(windowWidth + gridWidth) / 2 + margin_width_score * width_right
 
     sf::Font font;
-    sf::Text scoreLabel;
-    sf::Text scoreValue;
+    sf::Text scoreDisplay;
+    sf::Text enemyScoreDisplay;
+    sf::Text levelDisplay;
 
-    initScoreBox(font, scoreLabel, scoreValue, xd);
-    window.draw(scoreLabel);
-    window.draw(scoreValue);
+    initScoreBox(font, scoreDisplay, enemyScoreDisplay, levelDisplay, xd, windowWidth);
+
+    window.draw(scoreDisplay);
+    window.draw(levelDisplay);
+    if (multiplayer)
+    {
+        window.draw(enemyScoreDisplay);
+    }
 
     // Affichage du label des prochaines pièces
     sf::Text nextPiecesLabel;
@@ -306,7 +317,12 @@ const void Game::animateWindow()
         }
 
         window.clear();
-        scoreValue.setString(std::to_string(getLevel()));
+        levelDisplay.setString("LEVEL: " + std::to_string(getLevel()));
+        scoreDisplay.setString("SCORE: " + std::to_string(getScore()));
+        if (multiplayer)
+        {
+            enemyScoreDisplay.setString("SCORE: " + std::to_string(enemyScore));
+        }
 
         // Dessiner la grille du jeu
         for (int row = 0; row < grid.getGridHeight(); ++row)
@@ -382,8 +398,13 @@ const void Game::animateWindow()
             }
         }
 
-        window.draw(scoreLabel);
-        window.draw(scoreValue);
+        window.draw(scoreDisplay);
+        window.draw(levelDisplay);
+        if (multiplayer)
+        {
+            window.draw(enemyScoreDisplay);
+        }
+
         window.draw(nextPiecesLabel);
         drawNextPieces(*this, gameWindow, remainingHeightRight, width_right, windowHeight, windowWidth);
 
