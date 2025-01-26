@@ -66,7 +66,7 @@ int Grid::checkForFullLines()
     }
     return nbFullLines;
 }
-Game::Game(Grid &grid, bool multiplayer, sf::TcpSocket& socket) : grid(grid), level(0), score(0), counter(0), multiplayer(multiplayer), enemyGrid(grid.getGridWidth() * grid.getGridHeight(), '0'), enemySocket(socket)
+Game::Game(Grid &grid, bool multiplayer, sf::TcpSocket &socket) : grid(grid), level(0), score(0), counter(0), multiplayer(multiplayer), enemyGrid(grid.getGridWidth() * grid.getGridHeight(), '0'), enemySocket(socket)
 {
     /*
     Le but de ce morceau de code est de maximiser l'espace pris par la fenêtre de jeu en tenant
@@ -193,6 +193,52 @@ void drawNextPieces(Game &game, GameWindow &gameWindow, int remainingHeightRight
     Piece piece5 = Piece(game.getPieceIn5());
     drawPreviewPiece(game, gameWindow, piece5, dimcase, currentX, currentY, drawnCasesHeight);
 };
+
+void initEndDisplays(sf::RectangleShape &band, sf::RenderWindow &window, sf::Font &font, sf::Text& gameOverText, sf::Text &wonText, sf::Text &lostText)
+{
+    band.setSize(sf::Vector2f(window.getSize().x, window.getSize().y * 0.2));
+    band.setPosition(0, window.getSize().y * 0.4);
+    band.setFillColor(sf::Color(0, 0, 0, 200)); // Noir semi-transparent
+
+    
+    gameOverText.setFont(font);
+    gameOverText.setString("GAME OVER");
+    gameOverText.setCharacterSize(120);
+    gameOverText.setFillColor(sf::Color::White);
+
+    // Centrer le texte dans la bande
+    sf::FloatRect textBounds = gameOverText.getLocalBounds();
+    gameOverText.setOrigin(textBounds.left + textBounds.width * 0.5f,
+                      textBounds.top + textBounds.height * 0.5f);
+    gameOverText.setPosition(window.getSize().x * 0.5f,
+                             window.getSize().y * 0.5f);
+    
+
+    wonText.setFont(font);
+    wonText.setString("YOU WIN");
+    wonText.setCharacterSize(120);
+    wonText.setFillColor(sf::Color::White);
+
+    // Centrer le texte dans la bande
+    textBounds = wonText.getLocalBounds();
+    wonText.setOrigin(textBounds.left + textBounds.width * 0.5f,
+                      textBounds.top + textBounds.height * 0.5f);
+    wonText.setPosition(window.getSize().x * 0.5f,
+                        window.getSize().y * 0.5f);
+
+    lostText.setFont(font);
+    lostText.setString("YOU LOOSE");
+    lostText.setCharacterSize(120);
+    lostText.setFillColor(sf::Color::White);
+
+    // Centrer le texte dans la bande
+    textBounds = lostText.getLocalBounds();
+    lostText.setOrigin(textBounds.left + textBounds.width * 0.5f,
+                       textBounds.top + textBounds.height * 0.5f);
+    lostText.setPosition(window.getSize().x * 0.5f,
+                         window.getSize().y * 0.5f);
+}
+
 const void Game::animateWindow()
 {
 
@@ -242,17 +288,25 @@ const void Game::animateWindow()
 
     drawNextPieces(*this, gameWindow, remainingHeightRight, width_right, windowHeight, windowWidth);
 
+    // Elements à afficher à la fin
+    sf::RectangleShape horizontalBand; // Bande noire sur laquelle sera écrit game over ou autre si multijoueur
+    sf::Text gameOverText;
+    sf::Text wonText;
+    sf::Text lostText;
+
+    initEndDisplays(horizontalBand, window, font, gameOverText, wonText, lostText);
+
     // Boucle principale
     while (window.isOpen())
     {
-        window.clear();
-        scoreValue.setString(std::to_string(getLevel()));
-
         sf::Event event;
         while (gameWindow.getSFWindow().pollEvent(event))
         {
             gameWindow.addEvent(event);
         }
+
+        window.clear();
+        scoreValue.setString(std::to_string(getLevel()));
 
         // Dessiner la grille du jeu
         for (int row = 0; row < grid.getGridHeight(); ++row)
@@ -300,7 +354,7 @@ const void Game::animateWindow()
         // Dessiner la girlle adverse si jeu en multigjouer :
         if (multiplayer)
         {
-            int grid2OffsetX=windowWidth; // On commence à faire la grille enemie à droite de la fenêtre "classique"
+            int grid2OffsetX = windowWidth; // On commence à faire la grille enemie à droite de la fenêtre "classique"
             // Dessiner la grille du jeu
             for (int row = 0; row < grid.getGridHeight(); ++row) // TODO : vérifier que les deux joueurs jouent en meme dimension...
             {
@@ -333,12 +387,30 @@ const void Game::animateWindow()
         window.draw(nextPiecesLabel);
         drawNextPieces(*this, gameWindow, remainingHeightRight, width_right, windowHeight, windowWidth);
 
+        if (gameOver)
+        {
+            // Affichage des informations de fin par dessus le jeu (on garde les grilles en fond)
+            window.draw(horizontalBand);
+            if (multiplayer)
+            {
+                if (isWinner)
+                {
+                    window.draw(wonText);
+                }
+                else
+                {
+                    window.draw(lostText);
+                }
+            }
+            else
+            {
+                window.draw(gameOverText);
+            }
+        }
+
         // Afficher le contenu
         window.display();
 
-        if (isGameOver('L', {5, 0}))
-        {
-        }
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Economiser cpu
     }
 }
@@ -373,7 +445,7 @@ void Game::updateScore()
 bool Game::isGameOver(char type, std::vector<int> centralPosition)
 {
     Piece piece(type);
-    return checkFit(grid, piece.getPoints(), centralPosition);
+    return !checkFit(grid, piece.getPoints(), centralPosition);
 }
 
 void Game::setEnemyGrid(std::string str)
@@ -392,7 +464,7 @@ void spawnPieces(Game &game, GameWindow &gameWindow)
 {
     std::vector<int> centralPosition = {1, 4}; // TODO ne pas harcoder la position centrale
 
-    while (game.isGameOver(game.getPiece(), centralPosition))
+    while (!game.isGameOver(game.getPiece(), centralPosition))
     {
         FallingPiece fallingPiece(game.getGrid(), centralPosition, game.getPiece());
         auto fallingPiecePtr = std::make_unique<FallingPiece>(fallingPiece);
@@ -421,6 +493,8 @@ void spawnPieces(Game &game, GameWindow &gameWindow)
         game.getPieceIn4() = game.getPieceIn5();
         game.getPieceIn5() = game.randomPiece();
     }
+    std::cout << "Jeu terminé" << std::endl;
+    game.gameOver = true;
 }
 
 char Game::randomPiece()
@@ -474,7 +548,6 @@ void manageEvents(Game &game, GameWindow &gameWindow)
 void Game::startGame()
 {
     /*Lance le jeu, c'est à dire les différents thread nécessaires*/
-    // TODOLancement des threads éventuels
 
     std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
     // On détache le thread
@@ -495,8 +568,7 @@ void Game::startGame()
         // On détache le thread
         receiveThread.detach();
     }
-    
 
     // lancement de l'affichage
-    animateWindow();
+    animateWindow(); // gère aussi la fin du jeu
 };

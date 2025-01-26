@@ -71,6 +71,9 @@ public:
     bool isMultiplayer() {return multiplayer;};
     void setEnemyGrid(std::string str);
     std::string getEnemyGrid();
+
+    bool gameOver = false; // Permet de terminer le jeu
+    bool isWinner = true; // En cas de jeu multijoueur, permet de savoir qui a gagné
     
 };
 

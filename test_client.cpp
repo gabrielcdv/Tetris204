@@ -25,7 +25,6 @@ int main()
     Game game(gamegrid, true, socket);
 
     
-    // on lance le thread d'envoi
     
     game.startGame();
 
