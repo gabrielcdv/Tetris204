@@ -66,7 +66,7 @@ int Grid::checkForFullLines()
     }
     return nbFullLines;
 }
-Game::Game(Grid &grid, bool multiplayer, sf::TcpSocket &socket) : grid(grid), level(0), score(0), counter(0), multiplayer(multiplayer), enemyGrid(grid.getGridWidth() * grid.getGridHeight(), '0'), enemySocket(socket)
+Game::Game(Grid &grid, bool multiplayer, sf::TcpSocket &socket) : grid(grid), level(0), score(0), enemyScore(0), counter(0), multiplayer(multiplayer), enemyGrid(grid.getGridWidth() * grid.getGridHeight(), '0'), enemySocket(socket)
 {
     /*
     Le but de ce morceau de code est de maximiser l'espace pris par la fenêtre de jeu en tenant

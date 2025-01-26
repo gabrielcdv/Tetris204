@@ -39,6 +39,7 @@ private:
     GameWindow gameWindow;
     int level ;
     int score ;
+    int enemyScore;
     int counter ; // Compteur pour connaître le nombre de lignes retirées depuis le début de la partie
     char piece ;
     char pieceIn1 ;
@@ -57,6 +58,7 @@ public:
     GameWindow& getWindow() {return gameWindow;};
     void startGame();
     const void animateWindow();
+    int getScore() {return score ;};
     void updateScore();
     int getLevel(){return level;};
     void updateLevel();
@@ -70,10 +72,13 @@ public:
     bool isGameOver(char type, std::vector<int> mGridPosition);
     bool isMultiplayer() {return multiplayer;};
     void setEnemyGrid(std::string str);
+    void setEnemyScore(int enemScore){enemyScore = enemScore ;};
     std::string getEnemyGrid();
+    int getEnemyScore() {return enemyScore ;};
+
 
     bool gameOver = false; // Permet de terminer le jeu
-    bool isWinner = true; // En cas de jeu multijoueur, permet de savoir qui a gagné
+    bool isWinner = false; // En cas de jeu multijoueur, permet de savoir qui a gagné
     
 };
 

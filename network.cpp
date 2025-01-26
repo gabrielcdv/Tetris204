@@ -1,5 +1,6 @@
 #include "network.hpp"
 #include "color.hpp"
+#include <string>
 void sendMessage(sf::TcpSocket &socket, Game &game)
 {
     while (true)
@@ -26,6 +27,18 @@ void sendMessage(sf::TcpSocket &socket, Game &game)
                 data += std::to_string(matrix[i][j]);
             }
         }
+
+        //Ajout d'une information sur le fait que le joueur a perdu ou non 
+        if (game.gameOver && !game.isWinner){
+            data+= '1';
+        }
+        else {
+            data+= '0';
+        }
+
+        //Ajout du score du joueur :
+        data += game.getScore() ;
+
         std::cout << "envoi d'un message : " << data << std::endl;
         // socket.send(packet);
         // std::string message = "Bienvenue dans Tetris!";
@@ -49,7 +62,27 @@ void receiveData(sf::TcpSocket &socket, Game &game)
         else
         {
             std::cout << "Message reçu du serveur : " << data << std::endl;
-            game.setEnemyGrid(data);
+
+            std::vector<std::vector<Color>> matrix = game.getGrid().getMatrix(); // On fait une copie (ce n'est pas une référence vers matrix)
+
+            std::string data_str(data);
+
+            std::size_t gridSize = matrix.size() * matrix[0].size();
+
+            std::string grid = data_str.substr(0, gridSize);
+
+            char enemyLoose = data[gridSize];
+
+            if (enemyLoose == '1'){
+                game.isWinner = true ;
+                game.gameOver = true ;
+            } 
+
+            int score = data[gridSize+1];
+
+            game.setEnemyGrid(grid);
+            game.setEnemyScore(score);
+
         }
     }
 }
