@@ -58,7 +58,6 @@ public:
     GameWindow& getWindow() {return gameWindow;};
     void startGame();
     const void animateWindow();
-    int getScore() {return score ;};
     void updateScore();
     int getLevel(){return level;};
     int getScore(){return score;};
