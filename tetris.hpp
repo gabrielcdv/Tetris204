@@ -61,6 +61,7 @@ public:
     int getScore() {return score ;};
     void updateScore();
     int getLevel(){return level;};
+    int getScore(){return score;};
     void updateLevel();
     char& getPiece(){return piece ;};
     char& getPieceIn1(){return pieceIn1 ;};
