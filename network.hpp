@@ -4,7 +4,7 @@
 #include "tetris.hpp"
 
 
-void sendGrid(sf::TcpSocket& socket, Game &game);
+void sendMessage(sf::TcpSocket& socket, Game &game);
 
-void receiveGrid(sf::TcpSocket& socket, Game &game);
+void receiveData(sf::TcpSocket& socket, Game &game);
 

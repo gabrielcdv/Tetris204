@@ -560,11 +560,11 @@ void Game::startGame()
 
     if (multiplayer)
     {
-        std::thread sendThread(&sendGrid, std::ref(enemySocket), std::ref(*this));
+        std::thread sendThread(&sendMessage, std::ref(enemySocket), std::ref(*this));
         // On détache le thread
         sendThread.detach();
 
-        std::thread receiveThread(&receiveGrid, std::ref(enemySocket), std::ref(*this));
+        std::thread receiveThread(&receiveData, std::ref(enemySocket), std::ref(*this));
         // On détache le thread
         receiveThread.detach();
     }

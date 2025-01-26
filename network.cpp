@@ -1,6 +1,6 @@
 #include "network.hpp"
 #include "color.hpp"
-void sendGrid(sf::TcpSocket &socket, Game &game)
+void sendMessage(sf::TcpSocket &socket, Game &game)
 {
     while (true)
     {
@@ -34,7 +34,7 @@ void sendGrid(sf::TcpSocket &socket, Game &game)
     }
 }
 
-void receiveGrid(sf::TcpSocket &socket, Game &game)
+void receiveData(sf::TcpSocket &socket, Game &game)
 {
     // Réception de données
     char data[500];
