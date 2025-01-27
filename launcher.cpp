@@ -38,13 +38,6 @@ void hostServerGame()
     }
     std::cout << "Client connecté : " << client.getRemoteAddress() << std::endl;
 
-    // Envoi de données
-    std::string message = "Bienvenue dans Tetris!";
-    if (client.send(message.c_str(), message.size() + 1) != sf::Socket::Done)
-    {
-        std::cerr << "Erreur lors de l'envoi du message" << std::endl;
-    }
-
     // Combiner le PID et le temps actuel pour créer une graine unique
     unsigned seed = static_cast<unsigned>(std::time(0)) + getpid();
     std::srand(seed);
