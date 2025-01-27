@@ -8,9 +8,13 @@
 #include "window.hpp"
 #include "network.hpp"
 
+
+#define GRID_HEIGHT 10
+#define GRID_WIDTH 5
+
 void startSingleplayerGame()
 {
-    Grid gamegrid(22, 10);
+    Grid gamegrid(GRID_HEIGHT, GRID_WIDTH);
     sf::TcpSocket emptySocket;
     Game game(gamegrid, false, emptySocket);
     game.startGame();
@@ -49,7 +53,7 @@ void hostServerGame()
     unsigned seed = static_cast<unsigned>(std::time(0)) + getpid();
     std::srand(seed);
 
-    Grid gamegrid(22, 10);
+    Grid gamegrid(GRID_HEIGHT, GRID_WIDTH);
 
     Game game(gamegrid, true, client);
 
@@ -75,7 +79,7 @@ void joinServerGame(std::string ipstr)
     unsigned seed = static_cast<unsigned>(std::time(0)) + getpid();
     std::srand(seed);
 
-    Grid gamegrid(22, 10);
+    Grid gamegrid(GRID_HEIGHT, GRID_WIDTH);
 
     Game game(gamegrid, true, socket);
 
