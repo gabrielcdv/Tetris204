@@ -78,7 +78,7 @@ bool checkFit(Grid &grid, std::vector<std::vector<int>> points, std::vector<int>
         int newj = points[i][1] + gridPosition[1];
         if (grid.getMatrix()[newi][newj] != 0)
         {
-            std::cout << "La case est déjà occupée" << std::endl;
+            //std::cout << "La case est déjà occupée" << std::endl;
             return false;
         }
     }
@@ -194,7 +194,6 @@ void FallingPiece::checkReachedBottom()
 }
 void FallingPiece::stamp()
 {
-    std::cout << "START" << std::endl;
     /*
     Cette fonction grave la FallingPiece dans la grille (i.e. modifie la matrice de jeu pour
     y inscrire les blocs de couleur de la pièce)
@@ -203,11 +202,8 @@ void FallingPiece::stamp()
     {
         int i = mPoints[k][0] + mGridPosition[0];
         int j = mPoints[k][1] + mGridPosition[1];
-        std::cout << "On change " << mGrid.getMatrix()[i][j] << std::endl;
         mGrid.getMatrix()[i][j] = mColor;
-        std::cout << "résultat : " << mGrid.getMatrix()[i][j] << std::endl;
     }
-    std::cout << "END" << std::endl;
 };
 
 bool FallingPiece::canMoveDown()

@@ -39,7 +39,6 @@ void sendMessage(sf::TcpSocket &socket, Game &game)
         //Ajout du score du joueur :
         data += game.getScore() ;
 
-        std::cout << "envoi d'un message : " << data << std::endl;
         // socket.send(packet);
         // std::string message = "Bienvenue dans Tetris!";
         socket.send(data.c_str(), data.size() + 1);
@@ -61,7 +60,6 @@ void receiveData(sf::TcpSocket &socket, Game &game)
         }
         else
         {
-            std::cout << "Message reçu du serveur : " << data << std::endl;
 
             std::vector<std::vector<Color>> matrix = game.getGrid().getMatrix(); // On fait une copie (ce n'est pas une référence vers matrix)
 
