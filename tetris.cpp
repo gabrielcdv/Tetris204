@@ -569,6 +569,15 @@ void manageEvents(Game &game, GameWindow &gameWindow)
                 { // Touche Q
                     gameWindow.getFallingPiece().rotateLeft();
                 }
+                if (event.key.code == sf::Keyboard::Space)
+                { // Touche espae
+                    for (int i = 0; i < game.getGrid().getGridHeight(); i++)
+                    {
+                        gameWindow.getFallingPiece().moveDown();
+                    }
+                    
+                }
+                
             }
         }
     }
