@@ -1,5 +1,5 @@
 # Nom de l'exécutable
-TARGET = test.x
+TARGET = launcher.x
 CLIENT_TARGET = client.x
 SERVER_TARGET = server.x
 
@@ -19,8 +19,8 @@ CXXLIBFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
 all: $(TARGET)
 
 # Lien final pour le programme principal (solo)
-$(TARGET): $(COMMON_SRCS) test.cpp
-	$(CXX) $(CXXFLAGS) test.cpp $(COMMON_SRCS) -o $(TARGET) $(CXXLIBFLAGS)
+$(TARGET): $(COMMON_SRCS) launcher.cpp
+	$(CXX) $(CXXFLAGS) launcher.cpp $(COMMON_SRCS) -o $(TARGET) $(CXXLIBFLAGS)
 
 # Règle pour le client
 client: $(COMMON_SRCS) test_client.cpp

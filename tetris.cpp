@@ -310,6 +310,12 @@ const void Game::animateWindow()
     // Boucle principale
     while (window.isOpen())
     {
+        if (gameWindow.getAskCloseWindow())
+        {
+            window.close();
+            break;
+        }
+        
         sf::Event event;
         while (gameWindow.getSFWindow().pollEvent(event))
         {
@@ -535,8 +541,11 @@ void manageEvents(Game &game, GameWindow &gameWindow)
         if (evt)
         {
             sf::Event event = *evt;
-            if (event.type == sf::Event::Closed)
-                gameWindow.getSFWindow().close();
+            if (event.type == sf::Event::Closed) {
+                game.gameOver = true;
+                game.isWinner = false;
+                gameWindow.askCloseWindow();
+            }
 
             if (event.type == sf::Event::KeyPressed)
             {

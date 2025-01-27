@@ -1,6 +1,7 @@
 #include "window.hpp"
 #include "tetris.hpp"
 #include "piece.hpp"
+#include "launcher.hpp"
 #include <vector>
 #include <iostream>
 
@@ -11,7 +12,7 @@ int main() {
     
     Grid gamegrid(22,10);
 
-    Game game(gamegrid);
+    //Game game(gamegrid);
 
     Piece test_piece('L');
     FallingPiece fpiece(gamegrid, {3,2}, 'L');
@@ -20,8 +21,9 @@ int main() {
     
     
 
-    game.startGame();
+    //game.startGame();
     std::cout <<"TEST"<<std::endl;
+    showLauncher();
     
     return 0;
 }
