@@ -53,7 +53,7 @@ private:
     sf::TcpSocket& enemySocket;
 public:
     Game(Grid& grid, bool multiplayer, sf::TcpSocket& enemySocket);
-    Game(Grid& grid) : Game(grid, false, enemySocket) {};
+    //Game(Grid& grid) : Game(grid, false, enemySocket) {};
     Grid& getGrid() {return grid;};
     GameWindow& getWindow() {return gameWindow;};
     void startGame();

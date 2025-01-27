@@ -11,7 +11,8 @@
 void startSingleplayerGame()
 {
     Grid gamegrid(22, 10);
-    Game game(gamegrid);
+    sf::TcpSocket emptySocket;
+    Game game(gamegrid, false, emptySocket);
     game.startGame();
     showLauncher(); // permet de remontrer le launcher à l'issue d'une partie
 }
