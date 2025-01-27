@@ -5,6 +5,7 @@
 #include <memory>
 #include <cmath>
 #include <queue>
+#include <SFML/Audio.hpp>
 
 void Grid::moveLineDown(int lineIndex)
 {
@@ -587,6 +588,17 @@ void manageEvents(Game &game, GameWindow &gameWindow)
 void Game::startGame()
 {
     /*Lance le jeu, c'est à dire les différents thread nécessaires*/
+
+    //Lancement de la musique :
+    sf::Music music;
+    if (!music.openFromFile("resources/TetrisSound.ogg")) {
+        std::cerr << "Erreur : Impossible de charger le fichier musique.ogg" << std::endl;
+    }
+
+    music.setLoop(true); // Activer la répétition en boucle
+    music.setVolume(50); // Régler le volume (0 à 100)
+    music.play();        // Jouer la musique
+    
 
     std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
     // On détache le thread

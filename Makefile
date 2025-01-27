@@ -13,7 +13,7 @@ COMMON_SRCS = window.cpp piece.cpp tetris.cpp color.cpp network.cpp
 # Commande de compilation
 CXX = g++
 CXXFLAGS = -Wall -std=c++17 -pthread
-CXXLIBFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
+CXXLIBFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lsfml-audio
 
 # Règle par défaut
 all: $(TARGET)
