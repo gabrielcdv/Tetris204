@@ -316,7 +316,7 @@ const void Game::animateWindow()
             window.close();
             break;
         }
-        
+
         sf::Event event;
         while (gameWindow.getSFWindow().pollEvent(event))
         {
@@ -347,14 +347,29 @@ const void Game::animateWindow()
                         square.setFillColor(sf::Color::Black); // Noir
                     else
                         square.setFillColor(sf::Color(50, 50, 50, 255)); // Noir moins foncé
+
+                    window.draw(square);
                 }
                 else
                 { // On remplit la case de la couleur correspondante
-                    square.setFillColor(getSFMLColor(grid.getMatrix()[row][col]));
-                }
+                    sf::Color caseColor = getSFMLColor(grid.getMatrix()[row][col]);
+                    square.setFillColor(caseColor);
 
-                // Ajouter le carré à la fenêtre
-                window.draw(square);
+                    // Créer un carré intérieur plus sombre (inspiré de https://djblue.github.io/tetris/)
+                    sf::RectangleShape innerSquare(sf::Vector2f(gameWindow.getDimCase() * 0.7, gameWindow.getDimCase() * 0.7));
+                    innerSquare.setPosition(gridOffsetX + col * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15,
+                                            gridOffsetY + row * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15);
+
+                    // Assombrir la couleur pour le carré intérieur
+                    sf::Color darkerColor = caseColor;
+                    darkerColor.r = caseColor.r * 0.7f;
+                    darkerColor.g = caseColor.g * 0.7f;
+                    darkerColor.b = caseColor.b * 0.7f;
+                    innerSquare.setFillColor(darkerColor);
+
+                    window.draw(square);
+                    window.draw(innerSquare);
+                }
             }
         }
 
@@ -368,9 +383,25 @@ const void Game::animateWindow()
                 int i = pointsInGrid[k][0];
                 int j = pointsInGrid[k][1];
                 sf::RectangleShape square(sf::Vector2f(gameWindow.getDimCase(), gameWindow.getDimCase()));
+
+                sf::Color caseColor = getSFMLColor(fallingPiece.getColor());
                 square.setPosition(gridOffsetX + j * gameWindow.getDimCase(), gridOffsetY + i * gameWindow.getDimCase());
-                square.setFillColor(getSFMLColor(fallingPiece.getColor()));
+                square.setFillColor(caseColor);
+
+                // Créer un carré intérieur plus sombre (inspiré de https://djblue.github.io/tetris/)
+                sf::RectangleShape innerSquare(sf::Vector2f(gameWindow.getDimCase() * 0.7, gameWindow.getDimCase() * 0.7));
+                innerSquare.setPosition(gridOffsetX + j * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15,
+                                        gridOffsetY + i * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15);
+
+                // Assombrir la couleur pour le carré intérieur
+                sf::Color darkerColor = caseColor;
+                darkerColor.r = caseColor.r * 0.7f;
+                darkerColor.g = caseColor.g * 0.7f;
+                darkerColor.b = caseColor.b * 0.7f;
+                innerSquare.setFillColor(darkerColor);
+
                 window.draw(square);
+                window.draw(innerSquare);
             }
         }
 
@@ -396,13 +427,44 @@ const void Game::animateWindow()
                     }
                     else
                     { // On remplit la case de la couleur correspondante
-                        square.setFillColor(getSFMLColor(static_cast<Color>(enemyGrid[row * grid.getGridWidth() + col] - '0')));
+                        sf::Color caseColor = getSFMLColor(static_cast<Color>(enemyGrid[row * grid.getGridWidth() + col] - '0'));
+                        square.setFillColor(caseColor);
+
+                        // Créer un carré intérieur plus sombre (inspiré de https://djblue.github.io/tetris/)
+                        sf::RectangleShape innerSquare(sf::Vector2f(gameWindow.getDimCase() * 0.7, gameWindow.getDimCase() * 0.7));
+                        innerSquare.setPosition(grid2OffsetX + col * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15,
+                                                gridOffsetY + row * gameWindow.getDimCase() + gameWindow.getDimCase() * 0.15);
+
+                        // Assombrir la couleur pour le carré intérieur
+                        sf::Color darkerColor = caseColor;
+                        darkerColor.r = caseColor.r * 0.7f;
+                        darkerColor.g = caseColor.g * 0.7f;
+                        darkerColor.b = caseColor.b * 0.7f;
+                        innerSquare.setFillColor(darkerColor);
                     }
 
                     // Ajouter le carré à la fenêtre
                     window.draw(square);
                 }
             }
+        }
+
+        // Dessin des lignes de la grille
+        // Dessiner les lignes de la grille
+        for (int row = 0; row <= grid.getGridHeight(); ++row)
+        {
+            sf::RectangleShape horizontalLine(sf::Vector2f(grid.getGridWidth() * gameWindow.getDimCase(), 1));
+            horizontalLine.setPosition(gridOffsetX, gridOffsetY + row * gameWindow.getDimCase());
+            horizontalLine.setFillColor(sf::Color::Black);
+            window.draw(horizontalLine);
+        }
+
+        for (int col = 0; col <= grid.getGridWidth(); ++col)
+        {
+            sf::RectangleShape verticalLine(sf::Vector2f(1, grid.getGridHeight() * gameWindow.getDimCase()));
+            verticalLine.setPosition(gridOffsetX + col * gameWindow.getDimCase(), gridOffsetY);
+            verticalLine.setFillColor(sf::Color::Black);
+            window.draw(verticalLine);
         }
 
         window.draw(scoreDisplay);
@@ -542,7 +604,8 @@ void manageEvents(Game &game, GameWindow &gameWindow)
         if (evt)
         {
             sf::Event event = *evt;
-            if (event.type == sf::Event::Closed) {
+            if (event.type == sf::Event::Closed)
+            {
                 game.gameOver = true;
                 game.isWinner = false;
                 gameWindow.askCloseWindow();
@@ -576,9 +639,7 @@ void manageEvents(Game &game, GameWindow &gameWindow)
                     {
                         gameWindow.getFallingPiece().moveDown();
                     }
-                    
                 }
-                
             }
         }
     }
@@ -589,16 +650,16 @@ void Game::startGame()
 {
     /*Lance le jeu, c'est à dire les différents thread nécessaires*/
 
-    //Lancement de la musique :
+    // Lancement de la musique :
     sf::Music music;
-    if (!music.openFromFile("resources/TetrisSound.ogg")) {
+    if (!music.openFromFile("resources/TetrisSound.ogg"))
+    {
         std::cerr << "Erreur : Impossible de charger le fichier musique.ogg" << std::endl;
     }
 
     music.setLoop(true); // Activer la répétition en boucle
     music.setVolume(50); // Régler le volume (0 à 100)
     music.play();        // Jouer la musique
-    
 
     std::thread fallingPiecesThread(&spawnPieces, std::ref(*this), std::ref(gameWindow));
     // On détache le thread
